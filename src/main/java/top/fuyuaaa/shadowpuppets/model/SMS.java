@@ -1,6 +1,8 @@
 package top.fuyuaaa.shadowpuppets.model;
 
+import com.alibaba.fastjson.JSON;
 import lombok.Data;
+import top.fuyuaaa.shadowpuppets.util.HttpUtils;
 
 /**
  * @author: fuyuaaa
@@ -9,23 +11,21 @@ import lombok.Data;
 @Data
 public class SMS {
 
-    private static String sid;
-    private static String token;
-    private static String appid;
-    private static String templateid;
+    private  String sid;
+    private  String token;
+    private  String appid;
+    private  String templateid;
+    private  String uid;
     private String param;
     private String mobile;
-
-    static {
-        sid = "164d62fe65788be09197f0fe0de0f1a5";
-        token = "eb15c15165c9526768c8e70cece4fa9e";
-        appid = "d2e0b47771f5409bbbf8c1e418fb47c7";
-        //448969皮影戏 448959自带
-        templateid = "448969";
-    }
 
     public SMS(String param, String mobile) {
         this.param = param;
         this.mobile = mobile;
+        this.sid = "164d62fe65788be09197f0fe0de0f1a5";
+        this.token = "eb15c15165c9526768c8e70cece4fa9e";
+        this.appid = "d2e0b47771f5409bbbf8c1e418fb47c7";
+        //448969皮影戏 448959自带
+        this.templateid = "448969";
     }
 }

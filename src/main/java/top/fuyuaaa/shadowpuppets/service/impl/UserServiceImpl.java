@@ -5,7 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import top.fuyuaaa.shadowpuppets.dao.UserDao;
 import top.fuyuaaa.shadowpuppets.model.bo.UserBO;
-import top.fuyuaaa.shadowpuppets.model.dbo.UserDO;
+import top.fuyuaaa.shadowpuppets.model.po.UserPO;
 import top.fuyuaaa.shadowpuppets.service.UserService;
 import top.fuyuaaa.shadowpuppets.util.BeanUtils;
 
@@ -21,26 +21,26 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserBO getByUserName(String userName) {
-        UserDO userDO = userDao.getByUserName(userName);
-        if (null == userDO) {
+        UserPO userPO = userDao.getByUserName(userName);
+        if (null == userPO) {
             return null;
         }
-        return BeanUtils.copyProperties(userDO, UserBO.class);
+        return BeanUtils.copyProperties(userPO, UserBO.class);
     }
 
     @Override
     public UserBO getByTel(String tel) {
-        UserDO userDO = userDao.getByTel(tel);
-        if (null == userDO) {
+        UserPO userPO = userDao.getByTel(tel);
+        if (null == userPO) {
             return null;
         }
-        return BeanUtils.copyProperties(userDO, UserBO.class);
+        return BeanUtils.copyProperties(userPO, UserBO.class);
     }
 
     @Override
     public Boolean addUser(UserBO userBO) {
-        UserDO userDO = BeanUtils.copyProperties(userBO, UserDO.class);
-        Integer res = userDao.insert(userDO);
+        UserPO userPO = BeanUtils.copyProperties(userBO, UserPO.class);
+        Integer res = userDao.insert(userPO);
         return res != null && res > 0;
     }
 }

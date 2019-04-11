@@ -1,12 +1,20 @@
 package top.fuyuaaa.shadowpuppets;
 
+import com.google.common.collect.Iterables;
+import com.google.common.collect.Streams;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
+import top.fuyuaaa.shadowpuppets.dao.GoodsDao;
 import top.fuyuaaa.shadowpuppets.dao.UserDao;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
@@ -16,13 +24,42 @@ public class ShadowPuppetsApplicationTests {
     @Autowired
     UserDao userDao;
 
+    @Autowired
+    GoodsDao goodsDao;
+
     @Test
     public void contextLoads() {
     }
 
     @Test
-    public void testGetById(){
+    public void testGetById() {
         log.info(userDao.getById(1).toString());
         log.info(userDao.getByUserName("fuyu").toString());
+    }
+
+    @Test
+    public void testGetList() {
+        log.info(goodsDao.findList().toString());
+        log.info(goodsDao.findByGoodsId(1).toString());
+    }
+
+    @Test
+    public void testx() {
+        List<String> list = new ArrayList<>();
+        for (int i = 0; i < 200000; i++) {
+            list.add(String.valueOf(i));
+        }
+        Iterable<List<String>> parts = Iterables.partition(list, 1000);
+        parts.forEach(userDao::insertBatch);
+
+        List<String> list2 = new ArrayList<>();
+        parts.forEach(list2::addAll);
+        System.out.println(list.size());
+        System.out.println(list2.size());
+    }
+
+    @Test
+    public void test(){
+        System.out.println("\\xF0\\xA6\\x98\\xA6");
     }
 }

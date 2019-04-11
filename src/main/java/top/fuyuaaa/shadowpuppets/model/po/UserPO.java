@@ -1,4 +1,4 @@
-package top.fuyuaaa.shadowpuppets.model.dbo;
+package top.fuyuaaa.shadowpuppets.model.po;
 
 import lombok.Data;
 import top.fuyuaaa.shadowpuppets.model.BaseModel;
@@ -10,7 +10,7 @@ import java.util.Date;
  * @creat: 2019-03-27 21:34
  */
 @Data
-public class UserDO extends BaseModel {
+public class UserPO extends BaseModel {
     private static final long serialVersionUID = 9020317726771799362L;
     private Integer id;
     private String userName;

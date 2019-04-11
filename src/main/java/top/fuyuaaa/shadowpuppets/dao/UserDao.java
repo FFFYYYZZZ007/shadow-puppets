@@ -1,10 +1,9 @@
 package top.fuyuaaa.shadowpuppets.dao;
 
-import org.apache.ibatis.annotations.Insert;
-import org.apache.ibatis.annotations.Mapper;
-import org.apache.ibatis.annotations.Options;
-import org.apache.ibatis.annotations.Select;
-import top.fuyuaaa.shadowpuppets.model.dbo.UserDO;
+import org.apache.ibatis.annotations.*;
+import top.fuyuaaa.shadowpuppets.model.po.UserPO;
+
+import java.util.List;
 
 /**
  * @author: fuyuaaa
@@ -13,17 +12,29 @@ import top.fuyuaaa.shadowpuppets.model.dbo.UserDO;
 @Mapper
 public interface UserDao {
 
-    @Insert("insert into user (user_name, password, sex, birthday, tel, date_create) " +
-            "values(#{userName}, #{password}, #{sex}, #{birthday} ,#{tel}, now())")
+    @Insert("insert into user (user_name, password, sex, birthday, tel, date_create, date_update) " +
+            "values(#{userName}, #{password}, #{sex}, #{birthday} ,#{tel}, now(), now())")
     @Options(useGeneratedKeys = true, keyProperty = "id", keyColumn = "id")
-    Integer insert(UserDO userDO);
+    Integer insert(UserPO userPO);
 
     @Select("select * from user where id = #{userId} limit 1")
-    UserDO getById(Integer userId);
+    UserPO getById(Integer userId);
 
     @Select("select * from user where user_name = #{userName} limit 1")
-    UserDO getByUserName(String userName);
+    UserPO getByUserName(String userName);
 
     @Select("select * from user where tel = #{tel}")
-    UserDO getByTel(String tel);
+    UserPO getByTel(String tel);
+
+    @Insert("<script> INSERT INTO test\n" +
+            "        (\n" +
+            "            text\n" +
+            "        )\n" +
+            "        VALUES\n" +
+            "        <foreach collection=\"list\"  item='item'  separator=\",\">\n" +
+            "        (\n" +
+            "           #{item}\n" +
+            "        )\n" +
+            "        </foreach></script>")
+    void insertBatch(@Param(value = "list")List<String> list);
 }

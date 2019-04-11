@@ -11,14 +11,14 @@ public interface UserService {
     /**
      * 通过用户名查询User
      * @param userName 用户名
-     * @return UserDO.class
+     * @return UserPO.class
      */
     UserBO getByUserName(String userName);
 
     /**
      * 通过手机号查询User
      * @param tel 手机号
-     * @return UserDO.class
+     * @return UserPO.class
      */
     UserBO getByTel(String tel);
 

@@ -1,12 +1,17 @@
 package top.fuyuaaa.shadowpuppets.controller;
 
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.web.bind.annotation.*;
+import top.fuyuaaa.shadowpuppets.annotation.IgnoreSecurity;
 import top.fuyuaaa.shadowpuppets.common.Result;
+import top.fuyuaaa.shadowpuppets.model.SMS;
 import top.fuyuaaa.shadowpuppets.model.bo.UserBO;
 import top.fuyuaaa.shadowpuppets.model.vo.UserVO;
 import top.fuyuaaa.shadowpuppets.service.UserService;
@@ -31,7 +36,6 @@ public class UserController {
      */
     private final static String SMS_URL = "https://open.ucpaas.com/ol/sms/sendsms";
 
-
     private static ThreadFactory namedThreadFactory = new ThreadFactoryBuilder().setNameFormat("pyx-pool-%d").build();
 
     private ThreadPoolExecutor threadPool =
@@ -44,16 +48,28 @@ public class UserController {
     private static final String CODE_REDIS_PREFIX = "code:";
 
     /**
+     * 验证码过期时间 单位/秒
+     */
+    private static final Integer CODE_EXPIRE_TIME = 60;
+
+    /**
      * token KEY 前缀
      */
-    private static final String TOKE_REDIS_PREFIX = "token:";
+    private static final String TOKEN_REDIS_PREFIX = "token:";
 
+    /**
+     * token 过期时间 单位/小时
+     */
+    private static final Integer TOKEN_EXPIRE_TIME = 1;
 
     @Autowired
     UserService userService;
 
     @Autowired
     StringRedisTemplate redisTemplate;
+
+    @Value("${sms.send}")
+    boolean isOpenSend;
 
     /**
      * 发送验证码
@@ -62,6 +78,7 @@ public class UserController {
      * @return
      */
     @GetMapping("/code")
+    @IgnoreSecurity
     public Result<String> sendVerificationCode(@RequestParam String tel) {
         //校验手机号格式
         if (!TelNumberUtils.isTel(tel)) {
@@ -72,16 +89,20 @@ public class UserController {
         if (null != redisTemplate.opsForValue().get(key)) {
             return Result.fail("请勿频繁请求！");
         }
-
         //生成验证码
         String code = RandomUtils.code6();
         log.info(code);
         //发送验证码
         threadPool.submit(() -> {
-//            SMS sms = new SMS(code, tel);
-//            HttpUtils.post(SMS_URL, JSON.toJSONString(sms));
+            if (isOpenSend) {
+                SMS sms = new SMS(code, tel);
+                String result = HttpUtils.post(SMS_URL, JSON.toJSONString(sms));
+                if (StringUtils.isNotEmpty(result)) {
+                    JSONObject json = JSONObject.parseObject(result);
+                    log.info("发送验证码{}, tel: {}", "OK".equals(json.get("msg")) ? "成功" : "失败", tel);
+                }
+            }
         });
-
         redisTemplate.opsForValue().set(key, code, 60, TimeUnit.SECONDS);
         return Result.success("发送验证码成功");
     }
@@ -108,6 +129,7 @@ public class UserController {
      * @return
      */
     @PostMapping("/register")
+    @IgnoreSecurity
     public Result register(@RequestBody UserBO userBO,
                            @RequestParam String code) {
 
@@ -125,7 +147,7 @@ public class UserController {
         if (!userService.addUser(userBO)) {
             return Result.fail("500", "注册失败！");
         }
-        //TODO 登陆状态
+
         return Result.success();
     }
 
@@ -136,6 +158,7 @@ public class UserController {
      * @return
      */
     @PostMapping("/login")
+    @IgnoreSecurity
     public Result<String> login(@RequestBody UserBO userBO) {
         if (!checkLoginUserBO(userBO)) {
             return Result.fail("500", "用户名或密码为空");
@@ -152,9 +175,10 @@ public class UserController {
             return Result.fail("密码错误！");
         }
         //TODO 登陆状态
-//        setLoginStatus(tel);
+        String token = TOKEN_REDIS_PREFIX + userBO.getTel();
+        setLoginStatus(token);
 
-        return Result.success();
+        return Result.success(token);
     }
 
     @PostMapping("/logout")
@@ -209,20 +233,26 @@ public class UserController {
      * @return
      */
     private boolean codeCheck(String tel, String code) {
-        String correctCode = redisTemplate.opsForValue().get(tel);
+        String correctCode = redisTemplate.opsForValue().get(CODE_REDIS_PREFIX + tel);
         return null != correctCode && code.equals(correctCode);
     }
 
-    private void setLoginStatus(String tel) {
-        String prefix = "login:";
-        String token = prefix + tel;
-        redisTemplate.opsForValue().set(token, token, 7, TimeUnit.DAYS);
-    }
+    /**
+     * 将token保存至缓存中
+     *
+     * @param tel 手机号
+     */
+    private void setLoginStatus(String token) {
 
-    private void refreshLoginStatus(String tel) {
-        String prefix = "login-";
-        String token = prefix + tel;
-//        redisTemplate.opsForValue().
+        // 如果不存在，设置缓存
+        // TODO（这样做存在的问题，get和set不是原子性操作，考虑改成将整个步骤改成lua脚本）
+        if (StringUtils.isEmpty((redisTemplate.opsForValue().get(token)))) {
+            String value = String.valueOf(System.currentTimeMillis());
+            redisTemplate.opsForValue().set(token, value, TOKEN_EXPIRE_TIME, TimeUnit.HOURS);
+            return;
+        }
+        redisTemplate.expire(token, TOKEN_EXPIRE_TIME, TimeUnit.HOURS);
+
     }
 
     @GetMapping("/get")
