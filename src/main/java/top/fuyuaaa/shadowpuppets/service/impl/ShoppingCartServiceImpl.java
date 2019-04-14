@@ -28,8 +28,13 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
     ShoppingCartDao shoppingCartDao;
 
     @Override
-    public Integer addShoppingCart(ShoppingCartBO shoppingCartBO) {
+    public ShoppingCartBO getById(Integer id) {
         return null;
+    }
+
+    @Override
+    public Integer addShoppingCart(ShoppingCartBO shoppingCartBO) {
+        return shoppingCartDao.insertShoppingCart(BeanUtils.copyProperties(shoppingCartBO,ShoppingCartPO.class));
     }
 
     @Override

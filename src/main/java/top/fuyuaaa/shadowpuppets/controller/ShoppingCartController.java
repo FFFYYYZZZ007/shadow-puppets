@@ -32,20 +32,17 @@ public class ShoppingCartController {
     GoodsService goodsService;
 
     @PostMapping("/add")
-    public Result<String> addShoppingCart(@RequestParam Integer goodsId,
-                                          @RequestParam Integer num) {
+    public Result<String> addShoppingCart(@RequestBody ShoppingCartBO shoppingCartBO) {
         Integer userId = LoginUserHolder.instance().get().getId();
-        if (validateShoppingCartParams(userId, goodsId)) {
+        if (!validateShoppingCartParams(userId, shoppingCartBO)) {
             return Result.fail("参数缺失");
         }
-        num = null == num || num <= 0 ? 1 : num;
-
-        ShoppingCartBO shoppingCartBO = new ShoppingCartBO(userId, goodsId, num);
+        shoppingCartBO.setUserId(userId);
         Integer addResult = shoppingCartService.addShoppingCart(shoppingCartBO);
         if (null == addResult || addResult <= 0) {
             return Result.fail("加入购物车失败，请重试！");
         }
-        return Result.success("加入购物车成功！");
+        return Result.success("success","加入购物车成功！");
     }
 
     @GetMapping("/list")
@@ -89,10 +86,13 @@ public class ShoppingCartController {
      * 校验参数
      *
      * @param userId  用户id
-     * @param goodsId 商品id
+     * @param shoppingCartBO 商品
      * @return 参数是否符合
      */
-    private boolean validateShoppingCartParams(Integer userId, Integer goodsId) {
-        return null != userId && null != goodsId;
+    private boolean validateShoppingCartParams(Integer userId, ShoppingCartBO shoppingCartBO) {
+        if (shoppingCartBO.getNum() == null || shoppingCartBO.getNum() < 1) {
+            shoppingCartBO.setNum(1);
+        }
+        return null != userId && null != shoppingCartBO.getGoodsId();
     }
 }

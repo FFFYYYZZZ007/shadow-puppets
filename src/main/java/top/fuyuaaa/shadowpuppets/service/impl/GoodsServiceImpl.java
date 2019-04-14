@@ -10,6 +10,7 @@ import top.fuyuaaa.shadowpuppets.service.GoodsService;
 import top.fuyuaaa.shadowpuppets.util.BeanUtils;
 
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
@@ -42,5 +43,23 @@ public class GoodsServiceImpl implements GoodsService {
                 .collect(Collectors.toList());
     }
 
+    @Override
+    public List<GoodsBO> getGoodsListByParam(Map<String, Object> param) {
+        return null;
+    }
 
+    @Override
+    public Boolean addManagerGoods(GoodsBO goodsBO) {
+        return null;
+    }
+
+    @Override
+    public Boolean updateManagerGoods(GoodsBO goodsBO) {
+        return null;
+    }
+
+    @Override
+    public Boolean removeManagerGoods(Integer goodsId) {
+        return null;
+    }
 }

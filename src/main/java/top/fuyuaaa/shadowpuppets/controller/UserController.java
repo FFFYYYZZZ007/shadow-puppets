@@ -178,7 +178,7 @@ public class UserController {
         String token = TOKEN_REDIS_PREFIX + userBO.getTel();
         setLoginStatus(token);
 
-        return Result.success(token);
+        return Result.success(token,userBO.getUserName());
     }
 
     @PostMapping("/logout")
@@ -240,7 +240,7 @@ public class UserController {
     /**
      * 将token保存至缓存中
      *
-     * @param tel 手机号
+     * @param token 手机号
      */
     private void setLoginStatus(String token) {
 

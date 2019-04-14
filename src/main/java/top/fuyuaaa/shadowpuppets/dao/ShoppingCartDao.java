@@ -1,9 +1,6 @@
 package top.fuyuaaa.shadowpuppets.dao;
 
-import org.apache.ibatis.annotations.Insert;
-import org.apache.ibatis.annotations.Mapper;
-import org.apache.ibatis.annotations.Param;
-import org.apache.ibatis.annotations.Select;
+import org.apache.ibatis.annotations.*;
 import top.fuyuaaa.shadowpuppets.model.po.ShoppingCartPO;
 
 import java.util.List;
@@ -15,9 +12,14 @@ import java.util.List;
 @Mapper
 public interface ShoppingCartDao {
 
-    @Insert("insert shopping_cart into (user_id,goods_id,num,date_create,date_update) " +
+    @Insert("insert into shopping_cart (user_id,goods_id,num,date_create,date_update) " +
             "values (#{userId},#{goodsId},#{num},now(),now())")
+    @Options(useGeneratedKeys = true, keyProperty = "id", keyColumn = "id")
     Integer insertShoppingCart(ShoppingCartPO shoppingCartPO);
+
+
+    @Select("select * from shopping_cart where id = #{id} limit 1")
+    ShoppingCartPO getById(Integer id);
 
     /**
      * 查询购物车列表 BY userId

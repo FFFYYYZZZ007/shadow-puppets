@@ -3,6 +3,7 @@ package top.fuyuaaa.shadowpuppets.service;
 import top.fuyuaaa.shadowpuppets.model.bo.GoodsBO;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author: fuyuaaa
@@ -19,4 +20,34 @@ public interface GoodsService {
     GoodsBO getGoodsDetailsById(Integer id);
 
     List<GoodsBO> getList();
+
+    /**
+     * 根据查询参数查询列表
+     * @param param 参数
+     * @return 商品列表
+     */
+    List<GoodsBO> getGoodsListByParam(Map<String, Object> param);
+
+    //===========后台管理
+
+    /**
+     * 管理员添加商品
+     * @param goodsBO 商品
+     * @return true/false
+     */
+    Boolean addManagerGoods(GoodsBO goodsBO);
+
+    /**
+     * 管理员修改商品
+     * @param goodsBO 商品
+     * @return true/false
+     */
+    Boolean updateManagerGoods(GoodsBO goodsBO);
+
+    /**
+     * 管理员删除商品
+     * @param goodsId 商品ID
+     * @return true/false
+     */
+    Boolean removeManagerGoods(Integer goodsId);
 }

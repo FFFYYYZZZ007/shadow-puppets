@@ -11,6 +11,13 @@ import java.util.List;
 public interface ShoppingCartService {
 
     /**
+     * 查询购物车
+     * @param id 购物车id
+     * @return shoppingCartBO
+     */
+    ShoppingCartBO getById(Integer id);
+
+    /**
      * 新建一条购物车记录
      * @param shoppingCartBO 购物车业务类
      * @return 插入结果
