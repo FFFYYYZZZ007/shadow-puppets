@@ -10,8 +10,13 @@ spring:
     password: Fuyu742423672
 
 mybatis:
+  mapper-locations: classpath:sqlmap/*.xml
   configuration:
     map-underscore-to-camel-case: true
 
+#是否开启短信发送
 sms:
   send: false
+
+
+ignore-all-security: true

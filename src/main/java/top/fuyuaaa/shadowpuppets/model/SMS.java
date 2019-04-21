@@ -11,11 +11,11 @@ import top.fuyuaaa.shadowpuppets.util.HttpUtils;
 @Data
 public class SMS {
 
-    private  String sid;
-    private  String token;
-    private  String appid;
-    private  String templateid;
-    private  String uid;
+    private String sid;
+    private String token;
+    private String appid;
+    private String templateid;
+    private String uid;
     private String param;
     private String mobile;
 

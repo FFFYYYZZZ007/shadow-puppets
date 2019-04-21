@@ -49,27 +49,10 @@ public class ShoppingCartController {
     public Result<List<ShoppingCartVO>> getShoppingCartList(@RequestParam(defaultValue = "1") Integer page,
                                                             @RequestParam(defaultValue = "10") Integer pageSize) {
         Integer userId = LoginUserHolder.instance().get().getId();
-        List<ShoppingCartBO> shoppingCartBOList = shoppingCartService.getShoppingCartList(userId, page, pageSize);
-        List<ShoppingCartVO> shoppingCartVOList = convertShoppingCartBO2VO(shoppingCartBOList);
+        List<ShoppingCartVO> shoppingCartVOList = shoppingCartService.getShoppingCartVOList(userId, page, pageSize);
         return Result.success(shoppingCartVOList);
     }
 
-    /**
-     * 将BO转成VO
-     * @param shoppingCartBOList 购物车列表
-     * @return
-     */
-    private List<ShoppingCartVO> convertShoppingCartBO2VO(List<ShoppingCartBO> shoppingCartBOList) {
-        return shoppingCartBOList.stream()
-                .map(shoppingCartBO -> {
-                    ShoppingCartVO shoppingCartVO = BeanUtils.copyProperties(shoppingCartBO, ShoppingCartVO.class);
-                    GoodsBO goodsBO = goodsService.getGoodsDetailsById(shoppingCartBO.getGoodsId());
-                    shoppingCartVO.setKey(shoppingCartBO.getId());
-                    shoppingCartVO.setGoodsName(goodsBO.getGoodsName());
-                    shoppingCartVO.setPrice(goodsBO.getPrice());
-                    return shoppingCartVO;
-                }).collect(Collectors.toList());
-    }
 
     @PostMapping("/delete")
     public Result<Boolean> deleteShoppingCartList(@RequestBody List<Integer> ids) {

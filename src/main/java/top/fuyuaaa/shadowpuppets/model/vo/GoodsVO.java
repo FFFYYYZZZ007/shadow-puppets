@@ -17,7 +17,8 @@ public class GoodsVO implements Serializable {
     private String categoryName;
     private Double price;
     private String introduction;
+    private String mainImageUrl;
     private String imagesUrls;
-    private Integer onSale;
+    private String onSale;
     private Integer quantity;
 }

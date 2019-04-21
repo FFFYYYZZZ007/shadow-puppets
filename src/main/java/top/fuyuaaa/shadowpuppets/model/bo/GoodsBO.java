@@ -15,6 +15,7 @@ public class GoodsBO extends BaseModel {
     private Integer categoryId;
     private Double price;
     private String introduction;
+    private String mainImageUrl;
     private String imagesUrls;
     private Integer onSale;
     private Integer quantity;

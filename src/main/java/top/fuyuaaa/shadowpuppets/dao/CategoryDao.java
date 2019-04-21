@@ -15,8 +15,6 @@ public interface CategoryDao {
     @Select("select category_name from category where id =#{id} limit 1")
     String findCategoryNameById(Integer id);
 
-
-
     /**
      * 根据类别名 获取 类别
      *
@@ -30,7 +28,7 @@ public interface CategoryDao {
      * 获取类别列表
      * @return 类别列表
      */
-    @Select("select * from category order where date_delete is null by date_update desc")
+    @Select("select * from category where date_delete is null order by date_update desc")
     List<Category> getCategoryList();
 
     /**
@@ -47,7 +45,7 @@ public interface CategoryDao {
      * @param category 类别
      * @return true/false
      */
-    @Update("update category set category_name = {categoryName}, date_update = now() where id = #{id}")
+    @Update("update category set category_name = #{categoryName}, date_update = now() where id = #{id}")
     Integer updateCategory(Category category);
 
     /**

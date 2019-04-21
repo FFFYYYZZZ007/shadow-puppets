@@ -1,6 +1,8 @@
 package top.fuyuaaa.shadowpuppets.model.bo;
 
 import lombok.Data;
+import top.fuyuaaa.shadowpuppets.enums.DeliveryOrderStatusEnum;
+import top.fuyuaaa.shadowpuppets.enums.OrderStatusEnum;
 import top.fuyuaaa.shadowpuppets.model.BaseModel;
 
 import java.util.List;
@@ -15,6 +17,7 @@ public class GoodsOrderBO extends BaseModel {
     private Integer id;
     private Integer userId;
     private List<Integer> shoppingCartIdList;
+    private List<GoodsOrderSimpleBO> goodsOrderSimpleBOList;
     /**
      * 快递费
      */
@@ -26,9 +29,9 @@ public class GoodsOrderBO extends BaseModel {
     /**
      * 订单状态（0未付款/1已付款）
      */
-    private Integer status;
+    private OrderStatusEnum status;
     /**
      * 物流状态（0未发货/1已发货/2配送中/3已送达）
      */
-    private Integer deliveryStatus;
+    private DeliveryOrderStatusEnum deliveryStatus;
 }

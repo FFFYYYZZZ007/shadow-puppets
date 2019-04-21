@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="top.fuyuaaa.shadowpuppets.dao.GoodsDao">
+    <insert id="insert">
+        INSERT INTO `goods`(`goods_name`, `category_id`, `price`, `introduction`, `main_image_url`, `images_urls`,
+                            `on_sale`, `quantity`, `date_create`, `date_update`)
+        VALUES (#{goodsName}, #{categoryId}, #{price}, #{introduction}, #{mainImageUrl}, #{imagesUrls}, #{onSale},
+                #{quantity}, now(), now());
+    </insert>
+
+    <update id="update">
+        update goods set
+        date_update = now()
+        <if test="goodsName != null and goodsName != ''">
+            , goods_name = #{goodsName}
+        </if>
+        <if test="categoryId != null and categoryId != -1">
+            , category_id = #{categoryId}
+        </if>
+        <if test="price != null and price != -1">
+            , price = #{price}
+        </if>
+        <if test="introduction != null and introduction != ''">
+            , introduction = #{introduction}
+        </if>
+        <if test="mainImageUrl != null and mainImageUrl != ''">
+            , main_image_url = #{mainImageUrl}
+        </if>
+        <if test="imagesUrls != null and imagesUrls != ''">
+            , images_urls = #{imagesUrls}
+        </if>
+        <if test="onSale != null and onSale != -1">
+            , on_sale = #{onSale}
+        </if>
+        <if test="quantity != null and quantity != -1">
+            , quantity = #{quantity}
+        </if>
+        where id = #{id}
+    </update>
+
+    <select id="findList" resultType="top.fuyuaaa.shadowpuppets.model.po.GoodsPO">
+        select *
+        from goods
+        where date_delete is null
+        <if test="category != null and category != ''">
+            and category_id = #{category}
+        </if>
+        <if test="keyword != null and keyword != ''">
+            and goods_name like concat('%',#{keyword},'%')
+        </if>
+        <if test="onlySeeOnSale != null">
+            and on_sale = 1
+        </if>
+        <if test="onSale != null">
+            and on_sale = #{onSale}
+        </if>
+        order by date_update desc
+    </select>
+    <select id="count" resultType="java.lang.Integer">
+        select count(*)
+        from goods
+        where date_delete is null
+        <if test="category != null and category != ''">
+            and category_id = #{category}
+        </if>
+        <if test="keyword != null and keyword != ''">
+            and goods_name like concat('%',#{keyword},'%')
+        </if>
+        <if test="onlySeeOnSale != null">
+            and on_sale = 1
+        </if>
+        <if test="onSale != null">
+            and on_sale = #{onSale}
+        </if>
+    </select>
+
+
+</mapper>

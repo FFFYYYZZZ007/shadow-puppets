@@ -1,6 +1,7 @@
 package top.fuyuaaa.shadowpuppets.service;
 
 import top.fuyuaaa.shadowpuppets.model.bo.ShoppingCartBO;
+import top.fuyuaaa.shadowpuppets.model.vo.ShoppingCartVO;
 
 import java.util.List;
 
@@ -32,6 +33,8 @@ public interface ShoppingCartService {
      * @return 购物车列表
      */
     List<ShoppingCartBO> getShoppingCartList(Integer userId, Integer page, Integer pageSize);
+
+    List<ShoppingCartVO> getShoppingCartVOList(Integer userId, Integer page, Integer pageSize);
 
     /**
      * 根据列表删除购物车(软删除)

@@ -26,6 +26,9 @@ public interface ShoppingCartDao {
      * @param userId 用户ID
      * @return 购物车列表
      */
-    @Select("select * from shopping_cart where user_id = #{userId} order by date_create desc")
+    @Select("select * from shopping_cart where user_id = #{userId} and date_delete is null order by date_create desc")
     List<ShoppingCartPO> queryShoppingCartListByUserId(@Param("userId") Integer userId);
+
+    @Update("update shopping_cart set date_delete = now() where id=#{id} limit 1")
+    Integer deleteShoppingCart(Integer id);
 }

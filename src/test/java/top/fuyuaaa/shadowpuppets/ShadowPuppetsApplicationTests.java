@@ -1,5 +1,6 @@
 package top.fuyuaaa.shadowpuppets;
 
+import com.alibaba.fastjson.JSON;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Streams;
 import lombok.extern.slf4j.Slf4j;
@@ -10,6 +11,11 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 import top.fuyuaaa.shadowpuppets.dao.GoodsDao;
 import top.fuyuaaa.shadowpuppets.dao.UserDao;
+import top.fuyuaaa.shadowpuppets.model.qo.GoodsListQO;
+import top.fuyuaaa.shadowpuppets.model.qo.UserListQO;
+import top.fuyuaaa.shadowpuppets.service.GoodsOrderService;
+import top.fuyuaaa.shadowpuppets.service.GoodsService;
+import top.fuyuaaa.shadowpuppets.service.UserService;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -39,7 +45,7 @@ public class ShadowPuppetsApplicationTests {
 
     @Test
     public void testGetList() {
-        log.info(goodsDao.findList().toString());
+        log.info(goodsDao.findList(new GoodsListQO()).toString());
         log.info(goodsDao.findByGoodsId(1).toString());
     }
 
@@ -58,8 +64,23 @@ public class ShadowPuppetsApplicationTests {
         System.out.println(list2.size());
     }
 
+    @Autowired
+    GoodsOrderService goodsOrderService;
+    @Autowired
+    UserService userService;
+    @Autowired
+    GoodsService goodsService;
     @Test
     public void test(){
-        System.out.println("\\xF0\\xA6\\x98\\xA6");
+        UserListQO userListQO = new UserListQO();
+        userListQO.setPageNum(1);
+        userListQO.setPageSize(10);
+        System.out.println(JSON.toJSONString(userService.getUserManagerList(userListQO)));
+        userListQO.setKeyword("xxx");
+        System.out.println(JSON.toJSONString(userService.getUserManagerList(userListQO)));
+        userListQO.setKeyword("fuyu");
+        System.out.println(JSON.toJSONString(userService.getUserManagerList(userListQO)));
+
+        goodsService.categoryStatisticsInfo();
     }
 }

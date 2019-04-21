@@ -12,7 +12,6 @@ public class GoodsOrderPO extends BaseModel {
     private static final long serialVersionUID = -4830671962716229972L;
     private Integer id;
     private Integer userId;
-    private String goodsIds;
     /**
      * 快递费
      */

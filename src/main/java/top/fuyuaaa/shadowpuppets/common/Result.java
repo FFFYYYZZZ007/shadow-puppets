@@ -18,10 +18,10 @@ public class Result<T> {
     }
 
     public static <T> Result<T> success(T data) {
-        return success(data,"success");
+        return success(data, "success");
     }
 
-    public static <T> Result<T> success(T data,String msg) {
+    public static <T> Result<T> success(T data, String msg) {
         Result<T> r = new Result<>();
         r.setData(data);
         r.setSuccess(true);

@@ -1,6 +1,9 @@
 package top.fuyuaaa.shadowpuppets.service;
 
+import top.fuyuaaa.shadowpuppets.model.PageVO;
 import top.fuyuaaa.shadowpuppets.model.bo.UserBO;
+import top.fuyuaaa.shadowpuppets.model.qo.UserListQO;
+import top.fuyuaaa.shadowpuppets.model.vo.UserVO;
 
 /**
  * @author: fuyuaaa
@@ -29,5 +32,15 @@ public interface UserService {
      */
     Boolean addUser(UserBO userBO);
 
+    UserBO getById(Integer id);
 
+    Boolean updateUser(UserBO userBO);
+
+    UserVO getByVOId(Integer id);
+
+    PageVO<UserVO> getUserManagerList(UserListQO userListQO);
+
+    Boolean removeUser(Integer id);
+
+    Boolean isAdmin(Integer userId);
 }

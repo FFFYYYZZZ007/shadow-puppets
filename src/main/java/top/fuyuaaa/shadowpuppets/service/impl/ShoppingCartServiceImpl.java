@@ -1,13 +1,17 @@
 package top.fuyuaaa.shadowpuppets.service.impl;
 
 import com.github.pagehelper.PageHelper;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 import top.fuyuaaa.shadowpuppets.dao.ShoppingCartDao;
 import top.fuyuaaa.shadowpuppets.holder.LoginUserHolder;
+import top.fuyuaaa.shadowpuppets.model.bo.GoodsBO;
 import top.fuyuaaa.shadowpuppets.model.bo.ShoppingCartBO;
 import top.fuyuaaa.shadowpuppets.model.po.ShoppingCartPO;
+import top.fuyuaaa.shadowpuppets.model.vo.ShoppingCartVO;
+import top.fuyuaaa.shadowpuppets.service.GoodsService;
 import top.fuyuaaa.shadowpuppets.service.ShoppingCartService;
 import top.fuyuaaa.shadowpuppets.util.BeanUtils;
 
@@ -22,10 +26,14 @@ import java.util.stream.Collectors;
  * @creat: 2019-04-11 22:18
  */
 @Service("shoppingCartService")
+@Slf4j
 public class ShoppingCartServiceImpl implements ShoppingCartService {
 
     @Autowired
     ShoppingCartDao shoppingCartDao;
+
+    @Autowired
+    GoodsService goodsService;
 
     @Override
     public ShoppingCartBO getById(Integer id) {
@@ -34,7 +42,7 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
 
     @Override
     public Integer addShoppingCart(ShoppingCartBO shoppingCartBO) {
-        return shoppingCartDao.insertShoppingCart(BeanUtils.copyProperties(shoppingCartBO,ShoppingCartPO.class));
+        return shoppingCartDao.insertShoppingCart(BeanUtils.copyProperties(shoppingCartBO, ShoppingCartPO.class));
     }
 
     @Override
@@ -50,8 +58,38 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
     }
 
     @Override
+    public List<ShoppingCartVO> getShoppingCartVOList(Integer userId, Integer page, Integer pageSize) {
+        List<ShoppingCartBO> shoppingCartList = this.getShoppingCartList(userId, page, pageSize);
+        return convertShoppingCartBO2VO(shoppingCartList);
+    }
+
+    /**
+     * 将BO转成VO
+     *
+     * @param shoppingCartBOList 购物车列表
+     * @return
+     */
+    private List<ShoppingCartVO> convertShoppingCartBO2VO(List<ShoppingCartBO> shoppingCartBOList) {
+        return shoppingCartBOList.stream()
+                .map(shoppingCartBO -> {
+                    ShoppingCartVO shoppingCartVO = BeanUtils.copyProperties(shoppingCartBO, ShoppingCartVO.class);
+                    GoodsBO goodsBO = goodsService.getGoodsDetailsById(shoppingCartBO.getGoodsId());
+                    shoppingCartVO.setKey(shoppingCartBO.getId());
+                    shoppingCartVO.setGoodsName(goodsBO.getGoodsName());
+                    shoppingCartVO.setPrice(goodsBO.getPrice());
+                    return shoppingCartVO;
+                }).collect(Collectors.toList());
+    }
+
+    @Override
     public Boolean deleteShoppingCartList(List<Integer> ids) {
-        return null;
+        try {
+            ids.forEach(id -> shoppingCartDao.deleteShoppingCart(id));
+        } catch (Exception e) {
+            log.error("删除购物车失败！错误信息e:{}", e.getMessage());
+            return false;
+        }
+        return true;
     }
 
     @Override

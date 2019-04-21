@@ -1,7 +1,9 @@
 package top.fuyuaaa.shadowpuppets.dao;
 
 import org.apache.ibatis.annotations.*;
+import top.fuyuaaa.shadowpuppets.model.bo.UserBO;
 import top.fuyuaaa.shadowpuppets.model.po.UserPO;
+import top.fuyuaaa.shadowpuppets.model.qo.UserListQO;
 
 import java.util.List;
 
@@ -16,6 +18,11 @@ public interface UserDao {
             "values(#{userName}, #{password}, #{sex}, #{birthday} ,#{tel}, now(), now())")
     @Options(useGeneratedKeys = true, keyProperty = "id", keyColumn = "id")
     Integer insert(UserPO userPO);
+
+    Integer update(UserBO userBO);
+
+    @Delete("delete from user where id = #{id} limit 1")
+    Integer delete(Integer id);
 
     @Select("select * from user where id = #{userId} limit 1")
     UserPO getById(Integer userId);
@@ -37,4 +44,9 @@ public interface UserDao {
             "        )\n" +
             "        </foreach></script>")
     void insertBatch(@Param(value = "list")List<String> list);
+
+    List<UserPO> getUserListByQO(UserListQO userListQO);
+
+    @Select("select admin from user where id = #{userId} limit 1")
+    Integer admin(Integer userId);
 }

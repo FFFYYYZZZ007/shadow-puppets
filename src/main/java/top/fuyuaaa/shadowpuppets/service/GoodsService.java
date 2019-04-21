@@ -1,6 +1,9 @@
 package top.fuyuaaa.shadowpuppets.service;
 
 import top.fuyuaaa.shadowpuppets.model.bo.GoodsBO;
+import top.fuyuaaa.shadowpuppets.model.po.GoodsPO;
+import top.fuyuaaa.shadowpuppets.model.qo.GoodsListQO;
+import top.fuyuaaa.shadowpuppets.model.vo.GoodsVO;
 
 import java.util.List;
 import java.util.Map;
@@ -19,19 +22,35 @@ public interface GoodsService {
      */
     GoodsBO getGoodsDetailsById(Integer id);
 
-    List<GoodsBO> getList();
+    /**
+     * 根据id获取商品VO
+     *
+     * @param id 商品id
+     * @return 商品VO
+     */
+    GoodsVO getGoodsVOById(Integer id);
 
     /**
-     * 根据查询参数查询列表
-     * @param param 参数
+     * 获取商品列表
+     *
+     * @param goodsListQO 商品查询类
      * @return 商品列表
      */
-    List<GoodsBO> getGoodsListByParam(Map<String, Object> param);
+    List<GoodsBO> getList(GoodsListQO goodsListQO);
+
+    /**
+     * 获取商品列表
+     *
+     * @param goodsListQO 商品查询类
+     * @return 商品列表
+     */
+    List<GoodsVO> getVOList(GoodsListQO goodsListQO);
 
     //===========后台管理
 
     /**
      * 管理员添加商品
+     *
      * @param goodsBO 商品
      * @return true/false
      */
@@ -39,6 +58,7 @@ public interface GoodsService {
 
     /**
      * 管理员修改商品
+     *
      * @param goodsBO 商品
      * @return true/false
      */
@@ -46,8 +66,32 @@ public interface GoodsService {
 
     /**
      * 管理员删除商品
+     *
      * @param goodsId 商品ID
      * @return true/false
      */
     Boolean removeManagerGoods(Integer goodsId);
+
+    /**
+     * 更新商品的图片地址
+     *
+     * @param goodsId    商品id
+     * @param imagesUrls 图片地址
+     * @return
+     */
+    Boolean updateImagesUrls(Integer goodsId, String imagesUrls);
+
+    Boolean addGoodsImage(Integer goodsId, String resultUrl);
+
+    void removeGoodsImage(Integer goodsId, String imageUrl);
+
+    /**
+     * 根据类别ID获取商品数量
+     *
+     * @param categoryId 类别ID
+     * @return 商品数量
+     */
+    Integer countByCategoryId(Integer categoryId);
+
+    Map<String,Integer> categoryStatisticsInfo();
 }

@@ -29,12 +29,14 @@ public interface CategoryService {
 
     /**
      * 获取类别列表
+     *
      * @return 类别列表
      */
     List<Category> getCategoryList();
 
     /**
      * 添加类别
+     *
      * @param category 类别
      * @return true/false
      */
@@ -42,6 +44,7 @@ public interface CategoryService {
 
     /**
      * 更新类别
+     *
      * @param category 类别
      * @return true/false
      */
@@ -49,6 +52,7 @@ public interface CategoryService {
 
     /**
      * 删除类别
+     *
      * @param id 类别ID
      * @return true/false
      */
