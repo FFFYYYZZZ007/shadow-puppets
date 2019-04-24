@@ -1,5 +1,6 @@
 package top.fuyuaaa.shadowpuppets.service;
 
+import top.fuyuaaa.shadowpuppets.model.PageVO;
 import top.fuyuaaa.shadowpuppets.model.bo.GoodsBO;
 import top.fuyuaaa.shadowpuppets.model.po.GoodsPO;
 import top.fuyuaaa.shadowpuppets.model.qo.GoodsListQO;
@@ -45,6 +46,8 @@ public interface GoodsService {
      * @return 商品列表
      */
     List<GoodsVO> getVOList(GoodsListQO goodsListQO);
+
+    PageVO<GoodsVO> getGoodsPageVO(GoodsListQO goodsListQO);
 
     //===========后台管理
 

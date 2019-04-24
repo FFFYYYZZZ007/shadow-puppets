@@ -1,4 +1,4 @@
-package top.fuyuaaa.shadowpuppets.enums;
+package top.fuyuaaa.shadowpuppets.common.enums;
 
 /**
  * @author: fuyuaaa

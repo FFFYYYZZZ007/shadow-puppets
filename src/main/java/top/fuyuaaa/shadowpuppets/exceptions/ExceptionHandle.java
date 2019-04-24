@@ -16,7 +16,7 @@ public class ExceptionHandle {
     @ResponseBody
     @ExceptionHandler(value = RuntimeException.class)
     public Result javaExceptionHandler(Exception ex) {
-        log.error("捕获到RuntimeException异常: message{}", ex.getMessage());
+        log.error("捕获到RuntimeException异常: message: {}", ex.getMessage());
         return Result.fail(ex.getMessage());
     }
 }

@@ -1,11 +1,13 @@
 package top.fuyuaaa.shadowpuppets.service.impl;
 
+import com.github.pagehelper.PageHelper;
 import com.google.common.base.Joiner;
 import com.google.common.collect.Lists;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import top.fuyuaaa.shadowpuppets.dao.GoodsDao;
 import top.fuyuaaa.shadowpuppets.model.Category;
+import top.fuyuaaa.shadowpuppets.model.PageVO;
 import top.fuyuaaa.shadowpuppets.model.bo.GoodsBO;
 import top.fuyuaaa.shadowpuppets.model.po.GoodsOrderPO;
 import top.fuyuaaa.shadowpuppets.model.po.GoodsPO;
@@ -27,6 +29,8 @@ import java.util.stream.Collectors;
 public class GoodsServiceImpl implements GoodsService {
 
     private final static String SEPARATOR = ",";
+
+    private final Integer NON_CATEGORY = 0;
 
     @Autowired
     GoodsDao goodsDao;
@@ -74,6 +78,22 @@ public class GoodsServiceImpl implements GoodsService {
                 })
                 .collect(Collectors.toList());
         return goodsVOList;
+    }
+
+    @Override
+    public PageVO<GoodsVO> getGoodsPageVO(GoodsListQO goodsListQO) {
+        if (NON_CATEGORY.equals(goodsListQO.getCategory())) {
+            goodsListQO.setCategory(null);
+        }
+        Integer pageNum = goodsListQO.getPageNum();
+        Integer pageSize = goodsListQO.getPageSize();
+        //此处分页信息由于在service中做了各种转换所以丢失了，但是数据是对的
+        PageHelper.startPage(pageNum, pageSize);
+        List<GoodsVO> voList = this.getVOList(goodsListQO);
+        Integer count = goodsDao.count(goodsListQO);
+        PageVO<GoodsVO> pageVO =
+                new PageVO<>(pageNum, pageSize, count, voList);
+        return pageVO;
     }
 
     @Override

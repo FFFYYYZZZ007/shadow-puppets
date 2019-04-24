@@ -17,6 +17,7 @@ import top.fuyuaaa.shadowpuppets.service.UserService;
 import top.fuyuaaa.shadowpuppets.util.BeanUtils;
 import top.fuyuaaa.shadowpuppets.util.EncodeUtils;
 
+import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -51,6 +52,8 @@ public class UserServiceImpl implements UserService {
     @Override
     public Boolean addUser(UserBO userBO) {
         UserPO userPO = BeanUtils.copyProperties(userBO, UserPO.class);
+        userPO.setBirthday(new Date(0));
+        userPO.setSex(0);
         Integer res = userDao.insert(userPO);
         return res != null && res > 0;
     }
@@ -97,7 +100,7 @@ public class UserServiceImpl implements UserService {
             return null;
         }
         UserVO userVO = BeanUtils.copyProperties(userPO, UserVO.class);
-        userVO.setSex(1 == userPO.getSex() ? "男" : "女");
+        userVO.setSex(userPO.getBirthday() != null ? (1 == userPO.getSex() ? "男" : "女") : "");
         userVO.setBirthday(userPO.getBirthday() != null ? DateFormatUtils.format(userPO.getBirthday(), "yyyy-MM-dd") : "暂无");
         return userVO;
     }

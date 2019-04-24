@@ -1,8 +1,5 @@
 package top.fuyuaaa.shadowpuppets.service.impl;
 
-import com.github.pagehelper.PageHelper;
-import com.github.pagehelper.PageInfo;
-import com.google.common.base.Joiner;
 import org.apache.commons.lang3.time.DateFormatUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -12,14 +9,14 @@ import top.fuyuaaa.shadowpuppets.dao.GoodsDao;
 import top.fuyuaaa.shadowpuppets.dao.GoodsOrderDao;
 import top.fuyuaaa.shadowpuppets.dao.ShoppingCartDao;
 import top.fuyuaaa.shadowpuppets.dao.UserDao;
-import top.fuyuaaa.shadowpuppets.enums.DeliveryOrderStatusEnum;
-import top.fuyuaaa.shadowpuppets.enums.OrderStatusEnum;
+import top.fuyuaaa.shadowpuppets.common.enums.DeliveryOrderStatusEnum;
+import top.fuyuaaa.shadowpuppets.common.enums.OrderStatusEnum;
+import top.fuyuaaa.shadowpuppets.exceptions.AlipayException;
 import top.fuyuaaa.shadowpuppets.model.PageVO;
 import top.fuyuaaa.shadowpuppets.model.bo.GoodsOrderBO;
 import top.fuyuaaa.shadowpuppets.model.bo.GoodsOrderSimpleBO;
 import top.fuyuaaa.shadowpuppets.model.po.GoodsOrderInfoPO;
 import top.fuyuaaa.shadowpuppets.model.po.GoodsOrderPO;
-import top.fuyuaaa.shadowpuppets.model.po.GoodsPO;
 import top.fuyuaaa.shadowpuppets.model.po.ShoppingCartPO;
 import top.fuyuaaa.shadowpuppets.model.qo.GoodsOrderQO;
 import top.fuyuaaa.shadowpuppets.model.vo.GoodsOrderVO;
@@ -27,9 +24,9 @@ import top.fuyuaaa.shadowpuppets.model.vo.GoodsVO;
 import top.fuyuaaa.shadowpuppets.model.vo.GoodsVOWithNum;
 import top.fuyuaaa.shadowpuppets.service.GoodsOrderService;
 import top.fuyuaaa.shadowpuppets.service.GoodsService;
+import top.fuyuaaa.shadowpuppets.util.AlipayUtil;
 import top.fuyuaaa.shadowpuppets.util.BeanUtils;
 
-import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -130,19 +127,28 @@ public class GoodsOrderServiceImpl implements GoodsOrderService {
     }
 
     @Override
-    public Boolean deleteGoodsOrderById(Integer orderId) {
-        return goodsOrderDao.deleteGoodsOrder(orderId) > 0 && goodsOrderDao.deleteOrderInfoByOrderId(orderId) > 0;
+    public Boolean cancelGoodsOrderById(Integer orderId) {
+        return goodsOrderDao.cancelGoodsOrder(orderId) > 0 ;
     }
 
     @Override
-    public Boolean payGoodsOrder(Integer orderId) {
-        GoodsOrderBO goodsOrderBO = this.getById(orderId);
-        //去查找是否已支付
+    public String getAliPayUrl(Integer orderId) {
+        GoodsOrderVO orderVO = this.getOrderVOById(orderId);
+        String aliPayUrl = AlipayUtil.getAliPayUrl(orderVO, "http://fuyuaaa.nat300.top/orderInfo");
+        return aliPayUrl;
+    }
 
+    @Override
+    public Boolean checkOrderPaidAndUpdateOrderStatus(Integer orderId) {
+        GoodsOrderVO goodsOrderVO = this.getOrderVOById(orderId);
+        //去查找是否已支付
+        if (!AlipayUtil.checkTradeStatus(String.valueOf(orderId))) {
+            throw new AlipayException("支付失败");
+        }
         //如果已支付，更改状态为已支付
-        goodsOrderDao.updateOrderStatus(OrderStatusEnum.PAID.code(), goodsOrderBO.getId());
+        goodsOrderDao.updateOrderStatus(OrderStatusEnum.PAID.code(), goodsOrderVO.getId());
         //更改状态为未发货
-        goodsOrderDao.updateOrderDeliveryStatus(DeliveryOrderStatusEnum.UN_DELIVERY.code(), goodsOrderBO.getId());
+        goodsOrderDao.updateOrderDeliveryStatus(DeliveryOrderStatusEnum.UN_DELIVERY.code(), goodsOrderVO.getId());
         return true;
     }
 

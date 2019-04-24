@@ -1,4 +1,4 @@
-package top.fuyuaaa.shadowpuppets.enums;
+package top.fuyuaaa.shadowpuppets.common.enums;
 
 /**
  * @author: fuyuaaa
@@ -9,7 +9,7 @@ public enum DeliveryOrderStatusEnum {
     /**
      * 未发货
      */
-    UN_DELIVERY(0, "未发货"),
+    UN_DELIVERY(0, "待发货"),
     /**
      * 已发货
      */

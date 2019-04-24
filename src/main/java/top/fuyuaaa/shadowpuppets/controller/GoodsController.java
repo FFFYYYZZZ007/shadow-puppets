@@ -5,9 +5,10 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import top.fuyuaaa.shadowpuppets.annotation.ValidateAdmin;
 import top.fuyuaaa.shadowpuppets.common.Result;
 import top.fuyuaaa.shadowpuppets.dao.GoodsDao;
-import top.fuyuaaa.shadowpuppets.enums.ExEnum;
+import top.fuyuaaa.shadowpuppets.common.enums.ExEnum;
 import top.fuyuaaa.shadowpuppets.exceptions.ParamException;
 import top.fuyuaaa.shadowpuppets.exceptions.UploadException;
 import top.fuyuaaa.shadowpuppets.model.PageVO;
@@ -20,7 +21,6 @@ import top.fuyuaaa.shadowpuppets.util.FileUtils;
 import top.fuyuaaa.shadowpuppets.util.UploadUtil;
 
 import java.io.File;
-import java.util.List;
 import java.util.Map;
 
 /**
@@ -36,53 +36,34 @@ public class GoodsController {
     GoodsService goodsService;
     @Autowired
     CategoryService categoryService;
-    @Autowired
-    GoodsDao goodsDao;
-
-    private final Integer NON_CATEGORY = 0;
 
     @PostMapping("/list")
     public Result<PageVO<GoodsVO>> getGoodsList(@RequestBody GoodsListQO goodsListQO) {
         //只能查看在售的
         goodsListQO.setOnlySeeOnSale(1);
-        PageVO<GoodsVO> goodsPageVO = this.getGoodsPageVO(goodsListQO);
+        PageVO<GoodsVO> goodsPageVO = goodsService.getGoodsPageVO(goodsListQO);
         return Result.success(goodsPageVO);
-    }
-
-    private PageVO<GoodsVO> getGoodsPageVO(GoodsListQO goodsListQO) {
-        if (NON_CATEGORY.equals(goodsListQO.getCategory())) {
-            goodsListQO.setCategory(null);
-        }
-        Integer pageNum = goodsListQO.getPageNum();
-        Integer pageSize = goodsListQO.getPageSize();
-        //此处分页信息由于在service中做了各种转换所以丢失了，但是数据是对的
-        PageHelper.startPage(pageNum, pageSize);
-        List<GoodsVO> voList = goodsService.getVOList(goodsListQO);
-        Integer count = goodsDao.count(goodsListQO);
-        PageVO<GoodsVO> pageVO =
-                new PageVO<>(pageNum, pageSize, count, voList);
-        return pageVO;
     }
 
     @GetMapping("/one")
     public Result<GoodsVO> getGoodsDetailsById(@RequestParam Integer goodsId) {
         if (null == goodsId) {
-            return Result.fail("参数不能为空");
+            throw new ParamException(ExEnum.PARAM_ERROR.getMsg());
         }
         return Result.success(goodsService.getGoodsVOById(goodsId));
     }
 
-
-
     //==========================后台管理===========================
 
     @PostMapping("/manager/list")
+    @ValidateAdmin
     public Result<PageVO<GoodsVO>> getManagerGoodsList(@RequestBody GoodsListQO goodsListQO) {
-        PageVO<GoodsVO> goodsPageVO = this.getGoodsPageVO(goodsListQO);
+        PageVO<GoodsVO> goodsPageVO = goodsService.getGoodsPageVO(goodsListQO);
         return Result.success(goodsPageVO);
     }
 
     @PostMapping("/manager/add")
+    @ValidateAdmin
     public Result addManagerGoods(@RequestBody GoodsBO goodsBO) {
         if (null == goodsBO) {
             return Result.fail("参数不太对劲哦");
@@ -92,6 +73,7 @@ public class GoodsController {
     }
 
     @PostMapping("/manager/update")
+    @ValidateAdmin
     public Result<Boolean> updateManagerGoods(@RequestBody GoodsBO goodsBO) {
         if (null == goodsBO || null == goodsBO.getId()) {
             throw new ParamException(ExEnum.PARAM_ERROR.getMsg());
@@ -101,6 +83,7 @@ public class GoodsController {
     }
 
     @PostMapping("/manager/remove")
+    @ValidateAdmin
     public Result<Boolean> updateManagerGoods(@RequestParam Integer goodsId) {
         if (null == goodsId) {
             throw new ParamException(ExEnum.PARAM_ERROR.getMsg());
@@ -110,6 +93,7 @@ public class GoodsController {
     }
 
     @PostMapping("/manager/image/add")
+    @ValidateAdmin
     public Result<String> addGoodsDetailsImage(@RequestParam("file") MultipartFile multipartFile,
                                                @RequestParam("goodsId") Integer goodsId) {
         File file = FileUtils.convertMultipartFile2File(multipartFile);
@@ -125,6 +109,7 @@ public class GoodsController {
     }
 
     @PostMapping("/manager/image/remove")
+    @ValidateAdmin
     public Result removeGoodsDetailsImage(@RequestParam("imageUrl") String imageUrl,
                                           @RequestParam("goodsId") Integer goodsId) {
         goodsService.removeGoodsImage(goodsId, imageUrl);
@@ -132,6 +117,7 @@ public class GoodsController {
     }
 
     @PostMapping("/manager/image/main/upload")
+    @ValidateAdmin
     public Result<String> uploadGoodsMainImage(@RequestParam("file") MultipartFile multipartFile) {
         File file = FileUtils.convertMultipartFile2File(multipartFile);
         String resultUrl = UploadUtil.uploadGoodsMain2OSS(file);
@@ -142,6 +128,7 @@ public class GoodsController {
      * @return 分类统计信息
      */
     @PostMapping("/manager/category/statistics")
+    @ValidateAdmin
     public Result<Map<String, Integer>> categoryStatisticsInfo() {
         Map<String, Integer> statisticsInfo = goodsService.categoryStatisticsInfo();
         return Result.success(statisticsInfo);

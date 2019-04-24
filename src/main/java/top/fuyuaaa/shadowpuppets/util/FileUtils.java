@@ -1,7 +1,7 @@
 package top.fuyuaaa.shadowpuppets.util;
 
 import org.springframework.web.multipart.MultipartFile;
-import top.fuyuaaa.shadowpuppets.enums.ExEnum;
+import top.fuyuaaa.shadowpuppets.common.enums.ExEnum;
 import top.fuyuaaa.shadowpuppets.exceptions.UploadException;
 
 import java.io.File;

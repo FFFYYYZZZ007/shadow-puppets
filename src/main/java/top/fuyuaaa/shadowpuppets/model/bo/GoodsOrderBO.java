@@ -1,8 +1,8 @@
 package top.fuyuaaa.shadowpuppets.model.bo;
 
 import lombok.Data;
-import top.fuyuaaa.shadowpuppets.enums.DeliveryOrderStatusEnum;
-import top.fuyuaaa.shadowpuppets.enums.OrderStatusEnum;
+import top.fuyuaaa.shadowpuppets.common.enums.DeliveryOrderStatusEnum;
+import top.fuyuaaa.shadowpuppets.common.enums.OrderStatusEnum;
 import top.fuyuaaa.shadowpuppets.model.BaseModel;
 
 import java.util.List;

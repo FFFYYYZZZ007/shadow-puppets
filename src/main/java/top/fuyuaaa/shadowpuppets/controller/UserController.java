@@ -9,8 +9,9 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.web.bind.annotation.*;
 import top.fuyuaaa.shadowpuppets.annotation.NeedLogin;
+import top.fuyuaaa.shadowpuppets.annotation.ValidateAdmin;
 import top.fuyuaaa.shadowpuppets.common.Result;
-import top.fuyuaaa.shadowpuppets.enums.ExEnum;
+import top.fuyuaaa.shadowpuppets.common.enums.ExEnum;
 import top.fuyuaaa.shadowpuppets.exceptions.ParamException;
 import top.fuyuaaa.shadowpuppets.model.PageVO;
 import top.fuyuaaa.shadowpuppets.model.bo.UserBO;
@@ -213,6 +214,7 @@ public class UserController {
     //================================= 用户管理接口 ========================================
 
     @PostMapping("/manager/list")
+    @ValidateAdmin
     public Result<PageVO<UserVO>> getUserManagerList(@RequestBody UserListQO userListQO) {
         fillQueryParam(userListQO);
         PageVO<UserVO> userManagerList = userService.getUserManagerList(userListQO);
@@ -220,6 +222,7 @@ public class UserController {
     }
 
     @PostMapping("/manager/remove")
+    @ValidateAdmin
     public Result removeUserByManager(@RequestParam Integer userId) {
         Boolean success = userService.removeUser(userId);
         return success? Result.success().setMsg("移除用户成功"):Result.fail("移除用户失败");

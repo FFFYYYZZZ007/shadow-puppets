@@ -25,8 +25,10 @@ public interface GoodsOrderService {
 
     PageVO<GoodsOrderVO> getOrderVOList(GoodsOrderQO goodsOrderQO);
 
-    Boolean deleteGoodsOrderById(Integer orderId);
+    Boolean cancelGoodsOrderById(Integer orderId);
 
-    Boolean payGoodsOrder(Integer orderId);
+    String getAliPayUrl(Integer orderId);
+
+    Boolean checkOrderPaidAndUpdateOrderStatus(Integer orderId);
 
 }

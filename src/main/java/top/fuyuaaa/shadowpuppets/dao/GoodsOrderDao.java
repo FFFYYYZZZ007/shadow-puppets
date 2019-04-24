@@ -24,8 +24,8 @@ public interface GoodsOrderDao {
     @Select("select * from goods_order where id = #{orderId} limit 1")
     GoodsOrderPO getById(Integer orderId);
 
-    @Update("update goods_order set date_update = now(), date_delete= now() where id = #{orderId}")
-    Integer deleteGoodsOrder(Integer orderId);
+    @Update("update goods_order set status=3 ,date_update = now() where id = #{orderId}")
+    Integer cancelGoodsOrder(Integer orderId);
 
 
     List<GoodsOrderPO> getOrderList(GoodsOrderQO goodsOrderQO);
@@ -38,13 +38,10 @@ public interface GoodsOrderDao {
     @Select("select * from goods_order_info where goods_order_id = #{orderId} and date_delete is null")
     List<GoodsOrderInfoPO> getOrderInfoByOrderId(Integer orderId);
 
-    @Update("update goods_order_info set date_update = now(), date_delete= now() where goods_order_id = #{orderId}")
-    Integer deleteOrderInfoByOrderId(Integer orderId);
-
-    @Update("update goods_order_info set status = #{status}, date_update= now() where goods_order_id = #{orderId}")
+    @Update("update goods_order set status = #{status}, date_update= now() where id = #{orderId}")
     Integer updateOrderStatus(@Param("status") Integer status, @Param("orderId") Integer orderId);
 
-    @Update("update goods_order_info set delivery_status = #{deliveryStatus}, date_update= now() where goods_order_id = #{orderId}")
+    @Update("update goods_order set delivery_status = #{deliveryStatus}, date_update= now() where id = #{orderId}")
     Integer updateOrderDeliveryStatus(@Param("deliveryStatus") Integer deliveryStatus, @Param("orderId") Integer orderId);
 
 

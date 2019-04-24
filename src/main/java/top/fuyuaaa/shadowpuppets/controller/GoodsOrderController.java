@@ -3,10 +3,14 @@ package top.fuyuaaa.shadowpuppets.controller;
 import com.github.pagehelper.PageHelper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.util.CollectionUtils;
 import org.springframework.web.bind.annotation.*;
+import top.fuyuaaa.shadowpuppets.annotation.NeedLogin;
+import top.fuyuaaa.shadowpuppets.annotation.ValidateAdmin;
+import top.fuyuaaa.shadowpuppets.annotation.ValidateOrderOwner;
 import top.fuyuaaa.shadowpuppets.common.Result;
-import top.fuyuaaa.shadowpuppets.enums.DeliveryOrderStatusEnum;
-import top.fuyuaaa.shadowpuppets.enums.OrderStatusEnum;
+import top.fuyuaaa.shadowpuppets.common.enums.ExEnum;
+import top.fuyuaaa.shadowpuppets.exceptions.ParamException;
 import top.fuyuaaa.shadowpuppets.holder.LoginUserHolder;
 import top.fuyuaaa.shadowpuppets.model.PageVO;
 import top.fuyuaaa.shadowpuppets.model.bo.GoodsOrderBO;
@@ -28,53 +32,61 @@ public class GoodsOrderController {
 
     @Autowired
     GoodsOrderService goodsOrderService;
-
     @Autowired
     ShoppingCartService shoppingCartService;
-
     @Autowired
     GoodsService goodsService;
 
     @PostMapping("/add")
+    @NeedLogin
     public Result<Integer> addGoodsOrder(@RequestBody GoodsOrderBO goodsOrderBO) {
-        if (!validateOrder(goodsOrderBO)) {
-            return Result.fail("生成订单失败，请稍后重试");
-        }
+        validateOrder(goodsOrderBO);
         Integer userId = LoginUserHolder.instance().get().getId();
         goodsOrderBO.setUserId(userId);
         goodsOrderBO = goodsOrderService.addNewGoodsOrder(goodsOrderBO);
         System.out.println(goodsOrderBO);
         log.info(goodsOrderBO.toString());
-        if (goodsOrderBO != null) {
-            return Result.success(goodsOrderBO.getId());
-        }
-        return Result.fail("生成订单失败，请稍后重试");
+        return Result.success(goodsOrderBO.getId());
     }
 
-    @PostMapping("/pay")
-    public Result<String> payGoodsOrder(@RequestParam Integer orderId){
-        //TODO校验参数
-        goodsOrderService.payGoodsOrder(orderId);
-        return Result.success("").setMsg("支付成功");
+    @PostMapping("/pay/url")
+    @NeedLogin
+    @ValidateOrderOwner
+    public Result<String> getAliPayUrl(@RequestParam Integer orderId) {
+        //TODO校验参数, 这里得校验订单是不是用户的
+        String aliPayUrl = goodsOrderService.getAliPayUrl(orderId);
+        return Result.success(aliPayUrl).setMsg("正在跳转到支付宝...");
     }
 
     /**
-     * TODO 校验参数
+     * 当支付完成回调订单详情页地址时，在前端页面构造方法中会调这个接口
+     * 1. 查看这个订单是否已经支付
+     * 2. 已支付 => 更新订单状态
+     *
+     * @param orderId 订单编号
+     * @return
      */
-    private Boolean validateOrder(GoodsOrderBO goodsOrderBO) {
-        return true;
+    @PostMapping("/pay/check")
+    @NeedLogin
+    @ValidateOrderOwner
+    public Result<Boolean> checkOrderPaidAndUpdateOrderStatus(@RequestParam Integer orderId) {
+        Boolean success = goodsOrderService.checkOrderPaidAndUpdateOrderStatus(orderId);
+        return Result.success(success).setMsg("支付成功");
     }
 
     @PostMapping("/one")
+    @NeedLogin
+    @ValidateOrderOwner
     public Result<GoodsOrderVO> getGoodsOrder(@RequestParam Integer orderId) {
         GoodsOrderVO goodsOrderVO = goodsOrderService.getOrderVOById(orderId);
         return Result.success(goodsOrderVO);
     }
 
     @GetMapping("/user/list")
+    @NeedLogin
     public Result<PageVO<GoodsOrderVO>> getGoodsOrderListByUser(@RequestParam(defaultValue = "1") Integer page,
-                                                              @RequestParam(defaultValue = "5") Integer pageSize,
-                                                              @RequestParam(defaultValue = "-1") Integer orderStatus) {
+                                                                @RequestParam(defaultValue = "5") Integer pageSize,
+                                                                @RequestParam(defaultValue = "-1") Integer orderStatus) {
 
         Integer userId = LoginUserHolder.instance().get().getId();
         GoodsOrderQO goodsOrderQO = new GoodsOrderQO();
@@ -87,9 +99,11 @@ public class GoodsOrderController {
         return Result.success(pageVO);
     }
 
-    @PostMapping("/user/delete")
-    public Result<String> deleteGoodsOrderById(@RequestParam Integer orderId) {
-        if (null == orderId || 0 >= orderId || !goodsOrderService.deleteGoodsOrderById(orderId)) {
+    @PostMapping("/user/cancel")
+    @NeedLogin
+    @ValidateOrderOwner
+    public Result<String> cancelGoodsOrderById(@RequestParam Integer orderId) {
+        if (null == orderId || 0 >= orderId || !goodsOrderService.cancelGoodsOrderById(orderId)) {
             return Result.fail("取消订单失败！");
         }
         return Result.success("取消订单成功！", "取消订单成功！");
@@ -97,8 +111,8 @@ public class GoodsOrderController {
 
     //==============================  订单管理  ==============================
 
-
     @PostMapping("/manager/list")
+    @ValidateAdmin
     public Result<PageVO<GoodsOrderVO>> getGoodsOrderList(@RequestBody GoodsOrderQO goodsOrderQO) {
         fillGoodsOrderQO(goodsOrderQO);
         PageHelper.startPage(goodsOrderQO.getPageNum(), goodsOrderQO.getPageSize());
@@ -106,6 +120,16 @@ public class GoodsOrderController {
         return Result.success(pageVO);
     }
 
+    //==============================  private help methods  ==============================
+
+    /**
+     * 校验参数订单参数
+     */
+    private void validateOrder(GoodsOrderBO goodsOrderBO) {
+        if (CollectionUtils.isEmpty(goodsOrderBO.getGoodsOrderSimpleBOList()) && CollectionUtils.isEmpty(goodsOrderBO.getShoppingCartIdList())) {
+            throw new ParamException(ExEnum.ORDER_CREATE_PARAMS_ERROR.getMsg());
+        }
+    }
 
     private void fillGoodsOrderQO(GoodsOrderQO goodsOrderQO) {
         if (null == goodsOrderQO.getPageNum()) {

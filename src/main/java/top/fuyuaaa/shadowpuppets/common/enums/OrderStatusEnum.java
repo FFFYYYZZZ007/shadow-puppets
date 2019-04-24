@@ -1,4 +1,4 @@
-package top.fuyuaaa.shadowpuppets.enums;
+package top.fuyuaaa.shadowpuppets.common.enums;
 
 /**
  * @author: fuyuaaa
@@ -9,7 +9,9 @@ public enum OrderStatusEnum {
      * 未支付
      */
     UN_PAID(0, "未支付"),
-    PAID(1,"已支付");
+    PAID(1,"已支付"),
+    CLOSED(2,"已完成"),
+    FINISHED(3,"已关闭");
 
 
     private int code;

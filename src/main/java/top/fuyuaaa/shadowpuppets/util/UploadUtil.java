@@ -3,7 +3,7 @@ package top.fuyuaaa.shadowpuppets.util;
 import com.aliyun.oss.ClientException;
 import com.aliyun.oss.OSSClient;
 import com.aliyun.oss.OSSException;
-import top.fuyuaaa.shadowpuppets.enums.ExEnum;
+import top.fuyuaaa.shadowpuppets.common.enums.ExEnum;
 import top.fuyuaaa.shadowpuppets.exceptions.UploadException;
 
 import java.io.File;
