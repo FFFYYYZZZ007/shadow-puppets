@@ -30,10 +30,9 @@ public class AlipayUtil {
 
     private static final String TRADE_SUCCESS = "TRADE_SUCCESS";
 
-    public static String getAliPayUrl(GoodsOrderVO goodsOrderVO, String returnUrl) {
+    public static String getAliPayUrl(GoodsOrderVO goodsOrderVO) {
         AlipayClient alipayClient = new DefaultAlipayClient(SERVER_URL, APP_ID, PRIVATE_KEY, FORMAT, CHARSET, ALIPAY_PUBLIC_KEY, SIGN_TYPE); //获得初始化的AlipayClient
         AlipayTradePagePayRequest request = new AlipayTradePagePayRequest();//创建API对应的request
-        request.setReturnUrl(returnUrl);
         AlipayBO alipayBO = new AlipayBO();
         alipayBO.setOut_trade_no(String.valueOf(goodsOrderVO.getId()));
         alipayBO.setProduct_code("FAST_INSTANT_TRADE_PAY");
@@ -49,7 +48,7 @@ public class AlipayUtil {
         request.setBizContent(JSON.toJSONString(alipayBO));
         AlipayTradePagePayResponse response = null;
         try {
-            response = alipayClient.pageExecute(request,"get");
+            response = alipayClient.pageExecute(request, "get");
         } catch (AlipayApiException e) {
             throw new AlipayException("调用支付宝接口出错");
         }
@@ -64,26 +63,25 @@ public class AlipayUtil {
      * @param orderId 订单id
      * @return
      */
-    public static Boolean checkTradeStatus(String orderId){
+    public static Boolean checkTradeStatus(String orderId) {
         // TODO 这个client多出用到，考虑注入到spring中
         AlipayClient alipayClient = new DefaultAlipayClient(SERVER_URL, APP_ID, PRIVATE_KEY, FORMAT, CHARSET, ALIPAY_PUBLIC_KEY, SIGN_TYPE); //获得初始化的AlipayClient
         AlipayTradeQueryRequest request = new AlipayTradeQueryRequest();
         request.setBizContent("{" +
-                "\"out_trade_no\":\""+orderId+"\"" +
+                "\"out_trade_no\":\"" + orderId + "\"" +
                 "  }");
         AlipayTradeQueryResponse response = null;
         try {
             response = alipayClient.execute(request);
-        } catch (AlipayApiException e) {
-            e.printStackTrace();
+            return response.getTradeStatus().equals(TRADE_SUCCESS);
+        } catch (Exception e) {
+            log.error("调用支付宝查询状态失败，message: {}", e.getMessage());
         }
-        System.out.println(response.getTradeStatus());
-        return response.getTradeStatus().equals(TRADE_SUCCESS);
-
+        return false;
     }
 
     public static void main(String[] args) {
 //        getAliPayUrl(null, null);
-        checkTradeStatus("10");
+        checkTradeStatus("24");
     }
 }

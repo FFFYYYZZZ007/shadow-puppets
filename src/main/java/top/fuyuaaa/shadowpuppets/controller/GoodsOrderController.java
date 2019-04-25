@@ -2,6 +2,7 @@ package top.fuyuaaa.shadowpuppets.controller;
 
 import com.github.pagehelper.PageHelper;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.CollectionUtils;
 import org.springframework.web.bind.annotation.*;
@@ -39,7 +40,7 @@ public class GoodsOrderController {
 
     @PostMapping("/add")
     @NeedLogin
-    public Result<Integer> addGoodsOrder(@RequestBody GoodsOrderBO goodsOrderBO) {
+    public Result<String> addGoodsOrder(@RequestBody GoodsOrderBO goodsOrderBO) {
         validateOrder(goodsOrderBO);
         Integer userId = LoginUserHolder.instance().get().getId();
         goodsOrderBO.setUserId(userId);
@@ -52,7 +53,7 @@ public class GoodsOrderController {
     @PostMapping("/pay/url")
     @NeedLogin
     @ValidateOrderOwner
-    public Result<String> getAliPayUrl(@RequestParam Integer orderId) {
+    public Result<String> getAliPayUrl(@RequestParam String orderId) {
         //TODO校验参数, 这里得校验订单是不是用户的
         String aliPayUrl = goodsOrderService.getAliPayUrl(orderId);
         return Result.success(aliPayUrl).setMsg("正在跳转到支付宝...");
@@ -69,15 +70,15 @@ public class GoodsOrderController {
     @PostMapping("/pay/check")
     @NeedLogin
     @ValidateOrderOwner
-    public Result<Boolean> checkOrderPaidAndUpdateOrderStatus(@RequestParam Integer orderId) {
+    public Result<Boolean> checkOrderPaidAndUpdateOrderStatus(@RequestParam String orderId) {
         Boolean success = goodsOrderService.checkOrderPaidAndUpdateOrderStatus(orderId);
-        return Result.success(success).setMsg("支付成功");
+        return success?Result.success(true).setMsg("支付成功"):Result.fail("支付未完成");
     }
 
     @PostMapping("/one")
     @NeedLogin
     @ValidateOrderOwner
-    public Result<GoodsOrderVO> getGoodsOrder(@RequestParam Integer orderId) {
+    public Result<GoodsOrderVO> getGoodsOrder(@RequestParam String orderId) {
         GoodsOrderVO goodsOrderVO = goodsOrderService.getOrderVOById(orderId);
         return Result.success(goodsOrderVO);
     }
@@ -102,8 +103,8 @@ public class GoodsOrderController {
     @PostMapping("/user/cancel")
     @NeedLogin
     @ValidateOrderOwner
-    public Result<String> cancelGoodsOrderById(@RequestParam Integer orderId) {
-        if (null == orderId || 0 >= orderId || !goodsOrderService.cancelGoodsOrderById(orderId)) {
+    public Result<String> cancelGoodsOrderById(@RequestParam String orderId) {
+        if (StringUtils.isEmpty(orderId) || !goodsOrderService.cancelGoodsOrderById(orderId)) {
             return Result.fail("取消订单失败！");
         }
         return Result.success("取消订单成功！", "取消订单成功！");

@@ -1,9 +1,5 @@
 package top.fuyuaaa.shadowpuppets.util;
 
-/**
- * @author: fuyuaaa
- * @creat: 2019-03-28 23:53
- */
 import org.apache.http.client.config.RequestConfig;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpPost;
@@ -18,10 +14,10 @@ import java.io.InputStreamReader;
 import java.nio.charset.Charset;
 
 /**
- * @author dataochen
- * @Description
- * @date: 2017/11/7 17:49
+ * @author: fuyuaaa
+ * @creat: 2019-03-28 23:53
  */
+@SuppressWarnings("all")
 public class HttpUtils {
     private static CloseableHttpClient httpClient;
 

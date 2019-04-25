@@ -1,12 +1,8 @@
 package top.fuyuaaa.shadowpuppets.util;
 
-import org.springframework.util.CollectionUtils;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.stream.Collectors;
-
 /**
+ * 弱智写法，如果有空会把项目的Bean拷贝全换成mapStrut
+ *
  * @author: fuyuaaa
  * @creat: 2019-04-04 23:51
  */
@@ -31,18 +27,4 @@ public class BeanUtils {
         return target;
     }
 
-    public static <T> List<T> copyListProperties(List<Object> sourceList, Class<T> clazz) {
-        List<T> result = new ArrayList<>(sourceList.size());
-        T target = null;
-        for (Object source : sourceList) {
-            try {
-                target = clazz.newInstance();
-                org.springframework.beans.BeanUtils.copyProperties(source, target);
-                result.add(target);
-            } catch (InstantiationException | IllegalAccessException e) {
-                e.printStackTrace();
-            }
-        }
-        return result;
-    }
 }

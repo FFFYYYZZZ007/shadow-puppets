@@ -15,6 +15,7 @@ import top.fuyuaaa.shadowpuppets.common.enums.ExEnum;
 import top.fuyuaaa.shadowpuppets.exceptions.AuthException;
 import top.fuyuaaa.shadowpuppets.exceptions.OrderOwnerException;
 import top.fuyuaaa.shadowpuppets.exceptions.ParamException;
+import top.fuyuaaa.shadowpuppets.exceptions.UnLoginException;
 import top.fuyuaaa.shadowpuppets.holder.LoginUserHolder;
 import top.fuyuaaa.shadowpuppets.model.LoginUserInfo;
 import top.fuyuaaa.shadowpuppets.model.bo.GoodsOrderBO;
@@ -48,6 +49,9 @@ public class ValidateAdminAspect {
     @Before("pointCut()")
     public void checkUserIsAdmin(JoinPoint joinPoint) {
         LoginUserInfo userInfo = LoginUserHolder.instance().get();
+        if (null == userInfo) {
+            throw new UnLoginException(ExEnum.NON_LOGIN_USER.getMsg());
+        }
         Boolean isAdmin = userService.isAdmin(userInfo.getId());
         if (!isAdmin) {
             throw new AuthException(ExEnum.ADMIN_AUTH_ERROR.getMsg());

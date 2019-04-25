@@ -17,6 +17,7 @@ public enum ExEnum {
     IS_NOT_ORDER_OWNER("404", "订单不属于你，无法操作"),
     ORDER_CREATE_PARAMS_ERROR("405", "创建订单失败，参数错误"),
     ADMIN_AUTH_ERROR("501", "需要管理员权限"),
+    UPDATE_DELIVERY_STATUS_ERROR("501", "修改物流状态失败"),
     UPLOAD_ERROR("600", "上传文件异常"),
     ;
 

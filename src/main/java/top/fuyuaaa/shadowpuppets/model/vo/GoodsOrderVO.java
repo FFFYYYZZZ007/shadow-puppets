@@ -13,7 +13,7 @@ import java.util.List;
 @Data
 public class GoodsOrderVO implements Serializable {
     private static final long serialVersionUID = -1661403354547186166L;
-    private Integer id;
+    private String id;
     private String userName;
     private List<GoodsVOWithNum> goodsVOList;
     /**

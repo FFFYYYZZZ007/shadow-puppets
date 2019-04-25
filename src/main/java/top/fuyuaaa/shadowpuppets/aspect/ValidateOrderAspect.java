@@ -54,8 +54,7 @@ public class ValidateOrderAspect {
         if (StringUtils.isEmpty(orderId)) {
             throw new ParamException(ExEnum.PARAM_ERROR.getMsg());
         }
-        Integer orderIdInteger = Integer.valueOf(orderId);
-        GoodsOrderBO goodsOrderBO = goodsOrderService.getById(orderIdInteger);
+        GoodsOrderBO goodsOrderBO = goodsOrderService.getById(orderId);
         LoginUserInfo loginUserInfo = LoginUserHolder.instance().get();
         if (!goodsOrderBO.getUserId().equals(loginUserInfo.getId())) {
             throw new OrderOwnerException(ExEnum.IS_NOT_ORDER_OWNER.getMsg());

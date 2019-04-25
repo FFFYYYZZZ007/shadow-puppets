@@ -15,9 +15,9 @@ public interface GoodsOrderService {
 
     GoodsOrderBO addNewGoodsOrder(GoodsOrderBO goodsOrderBO);
 
-    GoodsOrderBO getById(Integer orderId);
+    GoodsOrderBO getById(String orderId);
 
-    GoodsOrderVO getOrderVOById(Integer orderId);
+    GoodsOrderVO getOrderVOById(String orderId);
 
     List<GoodsOrderBO> getOrderList(GoodsOrderQO goodsOrderQO);
 
@@ -25,10 +25,11 @@ public interface GoodsOrderService {
 
     PageVO<GoodsOrderVO> getOrderVOList(GoodsOrderQO goodsOrderQO);
 
-    Boolean cancelGoodsOrderById(Integer orderId);
+    Boolean cancelGoodsOrderById(String orderId);
 
-    String getAliPayUrl(Integer orderId);
+    String getAliPayUrl(String orderId);
 
-    Boolean checkOrderPaidAndUpdateOrderStatus(Integer orderId);
+    Boolean checkOrderPaidAndUpdateOrderStatus(String orderId);
 
+    Boolean updateDeliveryStatus(String orderId, Integer deliveryStatus);
 }

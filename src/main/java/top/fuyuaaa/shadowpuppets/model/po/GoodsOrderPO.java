@@ -10,7 +10,7 @@ import top.fuyuaaa.shadowpuppets.model.BaseModel;
 @Data
 public class GoodsOrderPO extends BaseModel {
     private static final long serialVersionUID = -4830671962716229972L;
-    private Integer id;
+    private String id;
     private Integer userId;
     /**
      * 快递费

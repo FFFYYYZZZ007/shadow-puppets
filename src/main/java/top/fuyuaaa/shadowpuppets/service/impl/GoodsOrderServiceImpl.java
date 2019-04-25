@@ -26,6 +26,7 @@ import top.fuyuaaa.shadowpuppets.service.GoodsOrderService;
 import top.fuyuaaa.shadowpuppets.service.GoodsService;
 import top.fuyuaaa.shadowpuppets.util.AlipayUtil;
 import top.fuyuaaa.shadowpuppets.util.BeanUtils;
+import top.fuyuaaa.shadowpuppets.util.UUIDUtils;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -52,6 +53,7 @@ public class GoodsOrderServiceImpl implements GoodsOrderService {
     @Transactional(rollbackFor = Exception.class)
     public GoodsOrderBO addNewGoodsOrder(GoodsOrderBO goodsOrderBO) {
         GoodsOrderPO goodsOrderPO = BeanUtils.copyProperties(goodsOrderBO, GoodsOrderPO.class);
+        goodsOrderPO.setId(UUIDUtils.getOrderCode());
         goodsOrderPO.setExpressFee(15.0);
         double price = 0;
         //购物车生成的订单
@@ -82,7 +84,7 @@ public class GoodsOrderServiceImpl implements GoodsOrderService {
     }
 
     @Override
-    public GoodsOrderBO getById(Integer orderId) {
+    public GoodsOrderBO getById(String orderId) {
         GoodsOrderPO goodsOrderPO = goodsOrderDao.getById(orderId);
         GoodsOrderBO goodsOrderBO = BeanUtils.copyProperties(goodsOrderPO, GoodsOrderBO.class);
         setGoodsOrderBO(goodsOrderBO, goodsOrderPO);
@@ -90,7 +92,7 @@ public class GoodsOrderServiceImpl implements GoodsOrderService {
     }
 
     @Override
-    public GoodsOrderVO getOrderVOById(Integer orderId) {
+    public GoodsOrderVO getOrderVOById(String orderId) {
         GoodsOrderBO goodsOrderBO = this.getById(orderId);
         return convertOrderBO2VO(goodsOrderBO);
     }
@@ -127,29 +129,35 @@ public class GoodsOrderServiceImpl implements GoodsOrderService {
     }
 
     @Override
-    public Boolean cancelGoodsOrderById(Integer orderId) {
-        return goodsOrderDao.cancelGoodsOrder(orderId) > 0 ;
+    public Boolean cancelGoodsOrderById(String orderId) {
+        return goodsOrderDao.cancelGoodsOrder(orderId) > 0;
     }
 
     @Override
-    public String getAliPayUrl(Integer orderId) {
+    public String getAliPayUrl(String orderId) {
         GoodsOrderVO orderVO = this.getOrderVOById(orderId);
-        String aliPayUrl = AlipayUtil.getAliPayUrl(orderVO, "http://fuyuaaa.nat300.top/orderInfo");
+        String aliPayUrl = AlipayUtil.getAliPayUrl(orderVO);
         return aliPayUrl;
     }
 
     @Override
-    public Boolean checkOrderPaidAndUpdateOrderStatus(Integer orderId) {
+    public Boolean checkOrderPaidAndUpdateOrderStatus(String orderId) {
         GoodsOrderVO goodsOrderVO = this.getOrderVOById(orderId);
         //去查找是否已支付
         if (!AlipayUtil.checkTradeStatus(String.valueOf(orderId))) {
-            throw new AlipayException("支付失败");
+            return false;
         }
         //如果已支付，更改状态为已支付
         goodsOrderDao.updateOrderStatus(OrderStatusEnum.PAID.code(), goodsOrderVO.getId());
         //更改状态为未发货
         goodsOrderDao.updateOrderDeliveryStatus(DeliveryOrderStatusEnum.UN_DELIVERY.code(), goodsOrderVO.getId());
         return true;
+    }
+
+    @Override
+    public Boolean updateDeliveryStatus(String orderId, Integer deliveryStatus) {
+        Integer row = goodsOrderDao.updateOrderDeliveryStatus(deliveryStatus, orderId);
+        return row == 1;
     }
 
     //==============================  private help methods  ==============================
@@ -180,7 +188,7 @@ public class GoodsOrderServiceImpl implements GoodsOrderService {
         return price;
     }
 
-    private void insertOrderInfo(Integer orderId, List<GoodsOrderSimpleBO> goodsOrderSimpleBOList) {
+    private void insertOrderInfo(String orderId, List<GoodsOrderSimpleBO> goodsOrderSimpleBOList) {
         GoodsOrderInfoPO goodsOrderInfoPO;
         for (GoodsOrderSimpleBO goodsOrderSimpleBO : goodsOrderSimpleBOList) {
             goodsOrderInfoPO = new GoodsOrderInfoPO();
@@ -191,7 +199,7 @@ public class GoodsOrderServiceImpl implements GoodsOrderService {
         }
     }
 
-    private void insertOrderInfo4Cart(Integer orderId, List<Integer> shoppingCartIdList) {
+    private void insertOrderInfo4Cart(String orderId, List<Integer> shoppingCartIdList) {
         ShoppingCartPO shoppingCartPO;
         GoodsOrderInfoPO goodsOrderInfoPO;
         for (Integer id : shoppingCartIdList) {

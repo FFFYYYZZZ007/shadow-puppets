@@ -7,6 +7,8 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import top.fuyuaaa.shadowpuppets.common.Result;
 
 /**
+ * 统一异常处理类
+ *
  * @author: fuyuaaa
  * @creat: 2019-04-18 16:36
  */
@@ -16,7 +18,8 @@ public class ExceptionHandle {
     @ResponseBody
     @ExceptionHandler(value = RuntimeException.class)
     public Result javaExceptionHandler(Exception ex) {
-        log.error("捕获到RuntimeException异常: message: {}", ex.getMessage());
-        return Result.fail(ex.getMessage());
+        String message = ex.getMessage();
+        log.error("捕获到RuntimeException异常: message: {}", message);
+        return Result.fail(message);
     }
 }

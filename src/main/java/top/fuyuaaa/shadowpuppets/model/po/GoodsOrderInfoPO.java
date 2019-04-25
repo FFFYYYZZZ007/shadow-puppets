@@ -11,7 +11,7 @@ import top.fuyuaaa.shadowpuppets.model.BaseModel;
 public class GoodsOrderInfoPO extends BaseModel {
     private static final long serialVersionUID = 1543301968135170466L;
     private Integer id;
-    private Integer goodsOrderId;
+    private String goodsOrderId;
     private Integer goodsId;
     private Integer num;
 }

@@ -14,7 +14,7 @@ import java.util.List;
 @Data
 public class GoodsOrderBO extends BaseModel {
     private static final long serialVersionUID = -6775800978873507724L;
-    private Integer id;
+    private String id;
     private Integer userId;
     private List<Integer> shoppingCartIdList;
     private List<GoodsOrderSimpleBO> goodsOrderSimpleBOList;

@@ -28,12 +28,12 @@ import java.lang.reflect.Method;
 @Component
 public class LoginInterceptor extends HandlerInterceptorAdapter {
 
+    private final static String UN_LOG_METHOD_NAME = "checkOrderPaidAndUpdateOrderStatus";
+
     @Autowired
     StringRedisTemplate redisTemplate;
-
     @Autowired
     UserService userService;
-
     @Value("${ignore-all-security}")
     boolean isIgnoreAllSecurity;
 
@@ -47,7 +47,10 @@ public class LoginInterceptor extends HandlerInterceptorAdapter {
         Method method = handlerMethod.getMethod();
         String requestPath = request.getRequestURI();
         String token = request.getHeader("ACCESS_TOKEN");
-        log.info("==请求信息== requestPath:{}, Method:{}, ACCESS_TOKEN:{}", requestPath, method.getName(), token);
+        //这个请求过于频繁，不输出日志
+        if (!UN_LOG_METHOD_NAME.equals(method.getName())) {
+            log.info("==请求信息== requestPath:{}, Method:{}, ACCESS_TOKEN:{}", requestPath, method.getName(), token);
+        }
         //是有效的token，设置user
         if (!isInvalidToken(token)) {
             setUser(token);

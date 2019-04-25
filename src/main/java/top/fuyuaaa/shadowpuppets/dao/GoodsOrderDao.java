@@ -15,17 +15,16 @@ import java.util.List;
 public interface GoodsOrderDao {
 
     @Insert("INSERT INTO `goods_order`" +
-            "(`user_id`, `express_fee`, `deal_price`, `status`,`delivery_status`, `date_create`, `date_update`) " +
-            "VALUES ( #{userId},#{expressFee},#{dealPrice}, 0,0, now(), now());")
-    @Options(useGeneratedKeys = true, keyProperty = "id", keyColumn = "id")
+            "(`id`,`user_id`, `express_fee`, `deal_price`, `status`,`delivery_status`, `date_create`, `date_update`) " +
+            "VALUES ( #{id}, #{userId},#{expressFee},#{dealPrice}, 0,0, now(), now());")
     void insertNewGoodsOrder(GoodsOrderPO goodsOrderPO);
 
 
     @Select("select * from goods_order where id = #{orderId} limit 1")
-    GoodsOrderPO getById(Integer orderId);
+    GoodsOrderPO getById(String orderId);
 
     @Update("update goods_order set status=3 ,date_update = now() where id = #{orderId}")
-    Integer cancelGoodsOrder(Integer orderId);
+    Integer cancelGoodsOrder(String orderId);
 
 
     List<GoodsOrderPO> getOrderList(GoodsOrderQO goodsOrderQO);
@@ -36,13 +35,13 @@ public interface GoodsOrderDao {
     Integer insertGoodsOrderInfo(GoodsOrderInfoPO goodsOrderInfoPO);
 
     @Select("select * from goods_order_info where goods_order_id = #{orderId} and date_delete is null")
-    List<GoodsOrderInfoPO> getOrderInfoByOrderId(Integer orderId);
+    List<GoodsOrderInfoPO> getOrderInfoByOrderId(String orderId);
 
     @Update("update goods_order set status = #{status}, date_update= now() where id = #{orderId}")
-    Integer updateOrderStatus(@Param("status") Integer status, @Param("orderId") Integer orderId);
+    Integer updateOrderStatus(@Param("status") Integer status, @Param("orderId") String orderId);
 
     @Update("update goods_order set delivery_status = #{deliveryStatus}, date_update= now() where id = #{orderId}")
-    Integer updateOrderDeliveryStatus(@Param("deliveryStatus") Integer deliveryStatus, @Param("orderId") Integer orderId);
+    Integer updateOrderDeliveryStatus(@Param("deliveryStatus") Integer deliveryStatus, @Param("orderId") String orderId);
 
 
     //==============================  订单管理  ==============================
