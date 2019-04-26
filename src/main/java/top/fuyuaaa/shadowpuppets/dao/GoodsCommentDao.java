@@ -17,9 +17,6 @@ public interface GoodsCommentDao {
     @Options(keyColumn = "id",keyProperty = "id",useGeneratedKeys = true)
     Integer insert(GoodsCommentPO goodsCommentPO);
 
-    @Update("update comment set like_count = like_count + 1 where id = #{commentId}")
-    Integer updateLikeCount(Integer commentId);
-
     @Delete("update comment set date_delete = now() where id = #{commentId}")
     Integer delete(Integer commentId);
 

@@ -27,13 +27,6 @@ public interface GoodsCommentService {
     void removeComment(Integer commentId);
 
     /**
-     * 点赞评论
-     * @param commentId 评论ID
-     */
-    void updateLikeCount(Integer commentId);
-
-
-    /**
      * 查询某个商品的评论
      * @param commentQO 评论查询参数
      * @return 评论分页列表

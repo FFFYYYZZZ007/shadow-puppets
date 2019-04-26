@@ -75,13 +75,6 @@ public class GoodsCommentServiceImpl implements GoodsCommentService {
     }
 
     @Override
-    public void updateLikeCount(Integer commentId) {
-        if (goodsCommentDao.updateLikeCount(commentId) != 1) {
-            throw new CommentException(ExEnum.COMMENT_LIKE_ERROR.getMsg());
-        }
-    }
-
-    @Override
     public PageVO<GoodsCommentVO> getListByGoodsId(CommentQO commentQO) {
         PageHelper.startPage(commentQO.getPageNum(), commentQO.getPageSize());
         List<GoodsCommentPO> listByGoodsId = goodsCommentDao.findListByGoodsId(commentQO.getGoodsId());

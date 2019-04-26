@@ -38,13 +38,6 @@ public class CommentController {
         return Result.success().setMsg("评论成功");
     }
 
-
-    @PostMapping("/add/like")
-    public Result addLikeCount(@RequestParam Integer commentId){
-        commentService.updateLikeCount(commentId);
-        return Result.success();
-    }
-
     @PostMapping("/remove")
     public Result removeComment(@RequestParam Integer commentId){
         commentService.removeComment(commentId);
