@@ -31,5 +31,4 @@ public interface GoodsOrderService {
 
     Boolean checkOrderPaidAndUpdateOrderStatus(String orderId);
 
-    Boolean updateDeliveryStatus(String orderId, Integer deliveryStatus);
 }

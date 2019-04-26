@@ -28,10 +28,6 @@ public class GoodsOrderVO implements Serializable {
      * 订单状态（0未付款/1已付款）
      */
     private String status;
-    /**
-     * 物流状态（0未发货/1已发货/2配送中/3已送达）
-     */
-    private String deliveryStatus;
 
     private String dateCreate;
     private String dateUpdate;

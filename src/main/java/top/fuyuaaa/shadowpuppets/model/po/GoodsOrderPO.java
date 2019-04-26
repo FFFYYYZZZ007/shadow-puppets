@@ -24,8 +24,6 @@ public class GoodsOrderPO extends BaseModel {
      * 订单状态（0未付款/1已付款）
      */
     private Integer status;
-    /**
-     * 物流状态（0未发货/1已发货/2配送中/3已送达）
-     */
-    private Integer deliveryStatus;
+
+
 }

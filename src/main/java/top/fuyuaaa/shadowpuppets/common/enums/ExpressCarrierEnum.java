@@ -1,28 +1,30 @@
 package top.fuyuaaa.shadowpuppets.common.enums;
 
+import lombok.Getter;
+
 /**
  * @author: fuyuaaa
- * @creat: 2019-04-15 10:08
+ * @creat: 2019-04-26 11:26
  */
 @SuppressWarnings("all")
-public enum OrderStatusEnum {
+public enum  ExpressCarrierEnum {
 
-    UN_PAID(0, "未支付"),
-    PAID(1,"已支付"),
-    WAIT_COMMENT(2,"待评价"),
-    FINISHED(3,"已完成"),
-    CLOSED(4,"已关闭");
+    SF_EXPRESS(1,"顺丰"),
+    YT_EXPRESS(2,"圆通"),
+    ST_EXPRESS(3,"申通"),
+    EMS_EXPRESS(4,"EMS");
 
-
+    @Getter
     private int code;
+    @Getter
     private String desc;
 
-    OrderStatusEnum(int code, String desc) {
+    ExpressCarrierEnum(int code, String desc) {
         this.code = code;
         this.desc = desc;
     }
 
-    public int code() {
+    public Integer code() {
         return code;
     }
 
@@ -30,8 +32,8 @@ public enum OrderStatusEnum {
         return desc;
     }
 
-    public static OrderStatusEnum find(int code) {
-        for (OrderStatusEnum filterMode : OrderStatusEnum.values()) {
+    public static ExpressCarrierEnum find(int code) {
+        for (ExpressCarrierEnum filterMode : ExpressCarrierEnum.values()) {
             if (filterMode.code == code) {
                 return filterMode;
             }

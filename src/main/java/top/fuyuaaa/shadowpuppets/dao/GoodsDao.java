@@ -1,6 +1,7 @@
 package top.fuyuaaa.shadowpuppets.dao;
 
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
 import org.apache.ibatis.annotations.Update;
 import top.fuyuaaa.shadowpuppets.model.po.GoodsPO;
@@ -25,6 +26,9 @@ public interface GoodsDao {
     Integer insert(GoodsPO goodsPO);
 
     Integer update(GoodsPO goodsPO);
+
+    @Update("update goods set quantity = quantity - 1, date_update = now() where id = #{goodsId} and quantity > 0")
+    Integer reduceStock(@Param("goodsId")Integer goodsId);
 
     @Select("select count(*) from goods where category_id = #{categoryId} and date_delete is null")
     Integer countByCategoryId(Integer categoryId);

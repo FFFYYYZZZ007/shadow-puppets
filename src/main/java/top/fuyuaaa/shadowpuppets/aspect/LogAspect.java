@@ -7,6 +7,8 @@ import org.aspectj.lang.annotation.*;
 import org.springframework.stereotype.Component;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
+import top.fuyuaaa.shadowpuppets.exceptions.CommentException;
+import top.fuyuaaa.shadowpuppets.exceptions.ParamException;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -53,6 +55,9 @@ public class LogAspect {
      */
     @AfterThrowing(pointcut = "log()", throwing = "e")
     public void logException(Throwable e) {
+        if (e instanceof ParamException || e instanceof CommentException) {
+            return;
+        }
         log.info("日志切面捕获到异常，e: {}", e);
     }
 

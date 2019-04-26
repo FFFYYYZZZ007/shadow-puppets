@@ -19,7 +19,11 @@ public class ExceptionHandle {
     @ExceptionHandler(value = RuntimeException.class)
     public Result javaExceptionHandler(Exception ex) {
         String message = ex.getMessage();
-        log.error("捕获到RuntimeException异常: message: {}", message);
+        if (ex instanceof ParamException) {
+            log.error("参数异常: message: {}", message);
+        } else {
+            log.error("运行异常: message: {}", message);
+        }
         return Result.fail(message);
     }
 }

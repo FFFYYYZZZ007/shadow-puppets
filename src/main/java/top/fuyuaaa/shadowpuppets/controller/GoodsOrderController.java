@@ -45,8 +45,6 @@ public class GoodsOrderController {
         Integer userId = LoginUserHolder.instance().get().getId();
         goodsOrderBO.setUserId(userId);
         goodsOrderBO = goodsOrderService.addNewGoodsOrder(goodsOrderBO);
-        System.out.println(goodsOrderBO);
-        log.info(goodsOrderBO.toString());
         return Result.success(goodsOrderBO.getId());
     }
 
@@ -54,7 +52,6 @@ public class GoodsOrderController {
     @NeedLogin
     @ValidateOrderOwner
     public Result<String> getAliPayUrl(@RequestParam String orderId) {
-        //TODO校验参数, 这里得校验订单是不是用户的
         String aliPayUrl = goodsOrderService.getAliPayUrl(orderId);
         return Result.success(aliPayUrl).setMsg("正在跳转到支付宝...");
     }

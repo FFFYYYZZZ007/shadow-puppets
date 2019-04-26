@@ -47,7 +47,6 @@ public class ValidateOrderAspect {
     @SuppressWarnings("all")
     @Before("pointCut()")
     public void checkOrderBelongUser(JoinPoint joinPoint) {
-        // 接收到请求，记录请求内容
         ServletRequestAttributes attributes = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
         HttpServletRequest request = attributes.getRequest();
         String orderId = request.getParameter("orderId");

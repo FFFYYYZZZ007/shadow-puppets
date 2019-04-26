@@ -13,13 +13,15 @@ mybatis:
   mapper-locations: classpath:sqlmap/*.xml
   configuration:
     map-underscore-to-camel-case: true
+    # 注意：mybatis自带的默认处理器EnumOrdinalTypeHandler 会根据枚举类里值得下标来存储的；如果下标和code不符合，需自定义Handle，我淦！
+    # 真实情况建议搞个枚举类的接口，再搞个枚举类统一处理，但是毕设懒得搞了，就这样吧。
+    default-enum-type-handler: org.apache.ibatis.type.EnumOrdinalTypeHandler
+  # 自定义handle的包
+  type-handlers-package: top.fuyuaaa.shadowpuppets.mybatis
 
 #是否开启短信发送
 sms:
   send: false
-
-
-ignore-all-security: true
 
 alipay:
   server-url: https://openapi.alipaydev.com/gateway.do

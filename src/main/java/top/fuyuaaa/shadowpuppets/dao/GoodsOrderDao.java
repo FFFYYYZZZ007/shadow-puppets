@@ -23,7 +23,7 @@ public interface GoodsOrderDao {
     @Select("select * from goods_order where id = #{orderId} limit 1")
     GoodsOrderPO getById(String orderId);
 
-    @Update("update goods_order set status=3 ,date_update = now() where id = #{orderId}")
+    @Update("update goods_order set status=4 ,date_update = now() where id = #{orderId}")
     Integer cancelGoodsOrder(String orderId);
 
 
@@ -39,10 +39,6 @@ public interface GoodsOrderDao {
 
     @Update("update goods_order set status = #{status}, date_update= now() where id = #{orderId}")
     Integer updateOrderStatus(@Param("status") Integer status, @Param("orderId") String orderId);
-
-    @Update("update goods_order set delivery_status = #{deliveryStatus}, date_update= now() where id = #{orderId}")
-    Integer updateOrderDeliveryStatus(@Param("deliveryStatus") Integer deliveryStatus, @Param("orderId") String orderId);
-
 
     //==============================  订单管理  ==============================
 

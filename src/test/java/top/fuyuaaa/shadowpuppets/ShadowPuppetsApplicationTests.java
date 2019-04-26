@@ -2,25 +2,28 @@ package top.fuyuaaa.shadowpuppets;
 
 import com.alibaba.fastjson.JSON;
 import com.google.common.collect.Iterables;
-import com.google.common.collect.Streams;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
+import top.fuyuaaa.shadowpuppets.dao.ExpressDeliveryDao;
+import top.fuyuaaa.shadowpuppets.dao.GoodsCommentDao;
 import top.fuyuaaa.shadowpuppets.dao.GoodsDao;
 import top.fuyuaaa.shadowpuppets.dao.UserDao;
+import top.fuyuaaa.shadowpuppets.mapstruct.CommentConverter;
+import top.fuyuaaa.shadowpuppets.model.po.GoodsCommentPO;
+import top.fuyuaaa.shadowpuppets.model.qo.ExpressDeliveryQO;
 import top.fuyuaaa.shadowpuppets.model.qo.GoodsListQO;
 import top.fuyuaaa.shadowpuppets.model.qo.UserListQO;
+import top.fuyuaaa.shadowpuppets.model.vo.GoodsCommentVO;
 import top.fuyuaaa.shadowpuppets.service.GoodsOrderService;
 import top.fuyuaaa.shadowpuppets.service.GoodsService;
 import top.fuyuaaa.shadowpuppets.service.UserService;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.function.Function;
-import java.util.stream.Collectors;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
@@ -82,5 +85,18 @@ public class ShadowPuppetsApplicationTests {
         System.out.println(JSON.toJSONString(userService.getUserManagerList(userListQO)));
 
         goodsService.categoryStatisticsInfo();
+    }
+
+    @Autowired
+    ExpressDeliveryDao expressDeliveryDao;
+    @Test
+    public void testEnumInsert(){
+        System.out.println(JSON.toJSONString(expressDeliveryDao.findList(new ExpressDeliveryQO())));
+    }
+
+    @Autowired
+    GoodsCommentDao goodsCommentDao;
+    @Test
+    public void testGoodsCommentDao(){
     }
 }

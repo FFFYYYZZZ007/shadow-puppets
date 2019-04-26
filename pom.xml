@@ -16,6 +16,7 @@
 
     <properties>
         <java.version>1.8</java.version>
+        <mapstruct.version>1.3.0.Final</mapstruct.version>
     </properties>
 
     <dependencies>
@@ -99,10 +100,23 @@
             <version>2.8.3</version>
         </dependency>
 
+        <!-- 支付宝SDK -->
         <dependency>
             <groupId>com.alipay.sdk</groupId>
             <artifactId>alipay-sdk-java</artifactId>
             <version>3.7.26.ALL</version>
+        </dependency>
+
+        <!-- 好用的mapStruct，mama，我再也不用写难看的Bean拷贝代码惹 -->
+        <dependency>
+            <groupId>org.mapstruct</groupId>
+            <artifactId>mapstruct-processor</artifactId>
+            <version>${mapstruct.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.mapstruct</groupId>
+            <artifactId>mapstruct-jdk8</artifactId>
+            <version>${mapstruct.version}</version>
         </dependency>
     </dependencies>
 

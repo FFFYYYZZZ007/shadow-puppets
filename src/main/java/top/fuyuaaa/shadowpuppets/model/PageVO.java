@@ -1,5 +1,6 @@
 package top.fuyuaaa.shadowpuppets.model;
 
+import com.github.pagehelper.PageInfo;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -21,4 +22,11 @@ public class PageVO<T> implements Serializable {
     private Integer pageSize;
     private Integer total;
     private List<T> list;
+
+    public PageVO(PageInfo pageInfo) {
+        this.pageNum = pageInfo.getPageNum();
+        this.pageSize = pageInfo.getPageSize();
+        Integer total = Integer.valueOf(String.valueOf(pageInfo.getTotal()));
+        this.total = total;
+    }
 }

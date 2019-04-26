@@ -5,16 +5,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
-import top.fuyuaaa.shadowpuppets.dao.GoodsDao;
-import top.fuyuaaa.shadowpuppets.dao.GoodsOrderDao;
-import top.fuyuaaa.shadowpuppets.dao.ShoppingCartDao;
-import top.fuyuaaa.shadowpuppets.dao.UserDao;
-import top.fuyuaaa.shadowpuppets.common.enums.DeliveryOrderStatusEnum;
+import top.fuyuaaa.shadowpuppets.common.enums.ExpressDeliveryStatusEnum;
+import top.fuyuaaa.shadowpuppets.dao.*;
 import top.fuyuaaa.shadowpuppets.common.enums.OrderStatusEnum;
-import top.fuyuaaa.shadowpuppets.exceptions.AlipayException;
 import top.fuyuaaa.shadowpuppets.model.PageVO;
 import top.fuyuaaa.shadowpuppets.model.bo.GoodsOrderBO;
 import top.fuyuaaa.shadowpuppets.model.bo.GoodsOrderSimpleBO;
+import top.fuyuaaa.shadowpuppets.model.po.ExpressDeliveryPO;
 import top.fuyuaaa.shadowpuppets.model.po.GoodsOrderInfoPO;
 import top.fuyuaaa.shadowpuppets.model.po.GoodsOrderPO;
 import top.fuyuaaa.shadowpuppets.model.po.ShoppingCartPO;
@@ -28,6 +25,8 @@ import top.fuyuaaa.shadowpuppets.util.AlipayUtil;
 import top.fuyuaaa.shadowpuppets.util.BeanUtils;
 import top.fuyuaaa.shadowpuppets.util.UUIDUtils;
 
+import java.math.BigDecimal;
+import java.text.DecimalFormat;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -46,6 +45,8 @@ public class GoodsOrderServiceImpl implements GoodsOrderService {
     GoodsOrderDao goodsOrderDao;
     @Autowired
     UserDao userDao;
+    @Autowired
+    ExpressDeliveryDao expressDeliveryDao;
     @Autowired
     GoodsService goodsService;
 
@@ -79,7 +80,6 @@ public class GoodsOrderServiceImpl implements GoodsOrderService {
             //插入订单信息
             insertOrderInfo(goodsOrderPO.getId(), goodsOrderSimpleBOList);
         }
-        //TODO 减库存
         return BeanUtils.copyProperties(goodsOrderPO, GoodsOrderBO.class);
     }
 
@@ -141,6 +141,7 @@ public class GoodsOrderServiceImpl implements GoodsOrderService {
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public Boolean checkOrderPaidAndUpdateOrderStatus(String orderId) {
         GoodsOrderVO goodsOrderVO = this.getOrderVOById(orderId);
         //去查找是否已支付
@@ -149,15 +150,13 @@ public class GoodsOrderServiceImpl implements GoodsOrderService {
         }
         //如果已支付，更改状态为已支付
         goodsOrderDao.updateOrderStatus(OrderStatusEnum.PAID.code(), goodsOrderVO.getId());
-        //更改状态为未发货
-        goodsOrderDao.updateOrderDeliveryStatus(DeliveryOrderStatusEnum.UN_DELIVERY.code(), goodsOrderVO.getId());
+        //添加物流信息，单号为空，状态为待发货
+        ExpressDeliveryPO po = new ExpressDeliveryPO();
+        po.setOrderId(orderId);
+        po.setDeliveryStatus(ExpressDeliveryStatusEnum.UN_DELIVERY);
+        po.setExpressPrice(goodsOrderVO.getExpressFee());
+        expressDeliveryDao.insert(po);
         return true;
-    }
-
-    @Override
-    public Boolean updateDeliveryStatus(String orderId, Integer deliveryStatus) {
-        Integer row = goodsOrderDao.updateOrderDeliveryStatus(deliveryStatus, orderId);
-        return row == 1;
     }
 
     //==============================  private help methods  ==============================
@@ -176,6 +175,7 @@ public class GoodsOrderServiceImpl implements GoodsOrderService {
             Integer goodsId = shoppingCartPO.getGoodsId();
             price += (goodsDao.findByGoodsId(goodsId).getPrice()) * (shoppingCartPO.getNum());
         }
+        price = Double.valueOf(new DecimalFormat(".##").format(price));
         return price;
     }
 
@@ -196,6 +196,8 @@ public class GoodsOrderServiceImpl implements GoodsOrderService {
             goodsOrderInfoPO.setGoodsId(goodsOrderSimpleBO.getGoodsId());
             goodsOrderInfoPO.setNum(goodsOrderSimpleBO.getNum());
             goodsOrderDao.insertGoodsOrderInfo(goodsOrderInfoPO);
+            //减库存
+            goodsDao.reduceStock(goodsOrderSimpleBO.getGoodsId());
         }
     }
 
@@ -209,13 +211,13 @@ public class GoodsOrderServiceImpl implements GoodsOrderService {
             goodsOrderInfoPO.setGoodsId(shoppingCartPO.getGoodsId());
             goodsOrderInfoPO.setNum(shoppingCartPO.getNum());
             goodsOrderDao.insertGoodsOrderInfo(goodsOrderInfoPO);
+            goodsDao.reduceStock(shoppingCartPO.getGoodsId());
         }
     }
 
     private void setGoodsOrderBO(GoodsOrderBO goodsOrderBO, GoodsOrderPO goodsOrderPO) {
         //设置枚举类
         goodsOrderBO.setStatus(OrderStatusEnum.find(goodsOrderPO.getStatus()));
-        goodsOrderBO.setDeliveryStatus(DeliveryOrderStatusEnum.find(goodsOrderPO.getDeliveryStatus()));
     }
 
     private GoodsOrderVO convertOrderBO2VO(GoodsOrderBO goodsOrderBO) {
@@ -237,7 +239,6 @@ public class GoodsOrderServiceImpl implements GoodsOrderService {
 
         //枚举类转成String
         goodsOrderVO.setStatus(goodsOrderBO.getStatus().desc());
-        goodsOrderVO.setDeliveryStatus(goodsOrderBO.getDeliveryStatus().desc());
 
         //设置时间
         goodsOrderVO.setDateCreate(DateFormatUtils.format(goodsOrderBO.getDateCreate(), "yyyy-MM-dd HH:mm:ss"));

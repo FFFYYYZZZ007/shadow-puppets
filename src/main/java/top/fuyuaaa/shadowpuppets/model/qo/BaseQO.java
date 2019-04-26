@@ -8,6 +8,7 @@ import top.fuyuaaa.shadowpuppets.model.BaseModel;
  * @creat: 2019-04-16 21:01
  */
 @Data
+@SuppressWarnings("all")
 public class BaseQO extends BaseModel {
     private static final long serialVersionUID = -1576861533043829278L;
     private Integer pageNum;

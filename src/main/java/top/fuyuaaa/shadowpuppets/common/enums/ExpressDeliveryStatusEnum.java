@@ -4,7 +4,7 @@ package top.fuyuaaa.shadowpuppets.common.enums;
  * @author: fuyuaaa
  * @creat: 2019-04-15 10:08
  */
-public enum DeliveryOrderStatusEnum {
+public enum ExpressDeliveryStatusEnum {
 
     /**
      * 未发货
@@ -27,7 +27,7 @@ public enum DeliveryOrderStatusEnum {
     private int code;
     private String desc;
 
-    DeliveryOrderStatusEnum(int code, String desc) {
+    ExpressDeliveryStatusEnum(int code, String desc) {
         this.code = code;
         this.desc = desc;
     }
@@ -40,8 +40,8 @@ public enum DeliveryOrderStatusEnum {
         return desc;
     }
 
-    public static DeliveryOrderStatusEnum find(int code) {
-        for (DeliveryOrderStatusEnum filterMode : DeliveryOrderStatusEnum.values()) {
+    public static ExpressDeliveryStatusEnum find(int code) {
+        for (ExpressDeliveryStatusEnum filterMode : ExpressDeliveryStatusEnum.values()) {
             if (filterMode.code == code) {
                 return filterMode;
             }

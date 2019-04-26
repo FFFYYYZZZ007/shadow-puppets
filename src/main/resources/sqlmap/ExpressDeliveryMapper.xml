@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="top.fuyuaaa.shadowpuppets.dao.ExpressDeliveryDao">
+    <select id="findList" resultType="top.fuyuaaa.shadowpuppets.model.po.ExpressDeliveryPO">
+        SELECT
+        edi.*,
+        u.user_name
+        FROM
+        express_delivery_info edi
+        LEFT JOIN goods_order o ON edi.order_id = o.id
+        LEFT JOIN user u ON o.user_id = u.id
+        WHERE
+        edi.date_delete IS NULL
+        <if test="orderId != null and orderId != ''">
+            , edi.order_id like concat('%',#{orderId},'%')
+        </if>
+        <if test="expressCode != null and expressCode != ''">
+            , edi.express_code like concat('%',#{expressCode},'%')
+        </if>
+        <if test="deliveryStatus != null and expressCode != -1">
+            , edi.delivery_status = #{deliveryStatus}
+        </if>
+        <if test="expressCarrier != null and expressCarrier != ''">
+            , edi.express_carrier = #{expressCarrier}
+        </if>
+        ORDER BY edi.date_update
+    </select>
+</mapper>

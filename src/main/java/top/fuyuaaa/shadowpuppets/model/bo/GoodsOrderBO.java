@@ -1,7 +1,6 @@
 package top.fuyuaaa.shadowpuppets.model.bo;
 
 import lombok.Data;
-import top.fuyuaaa.shadowpuppets.common.enums.DeliveryOrderStatusEnum;
 import top.fuyuaaa.shadowpuppets.common.enums.OrderStatusEnum;
 import top.fuyuaaa.shadowpuppets.model.BaseModel;
 
@@ -30,8 +29,4 @@ public class GoodsOrderBO extends BaseModel {
      * 订单状态（0未付款/1已付款）
      */
     private OrderStatusEnum status;
-    /**
-     * 物流状态（0未发货/1已发货/2配送中/3已送达）
-     */
-    private DeliveryOrderStatusEnum deliveryStatus;
 }
