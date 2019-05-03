@@ -43,7 +43,7 @@
     <select id="findList" resultType="top.fuyuaaa.shadowpuppets.model.po.GoodsPO">
         select *
         from goods
-        where date_delete is null
+        where date_delete is null and quantity > 0
         <if test="category != null and category != ''">
             and category_id = #{category}
         </if>

@@ -12,6 +12,7 @@ import java.util.UUID;
  * @author: fuyuaaa
  * @creat: 2019-04-20 19:09
  */
+@SuppressWarnings("all")
 public class FileUtils {
     public static File convertMultipartFile2File(MultipartFile multfile) {
         // 获取文件名

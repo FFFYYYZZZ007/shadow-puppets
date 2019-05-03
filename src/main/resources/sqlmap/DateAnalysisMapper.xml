@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="top.fuyuaaa.shadowpuppets.dao.DateAnalysisDao">
+
+    <select id="orderDataMonth" resultType="top.fuyuaaa.shadowpuppets.model.analysis.XYData">
+        SELECT date(date_create) AS x, count(*) AS y
+        FROM goods_order
+        WHERE
+            DATE_SUB( CURDATE( )
+            , INTERVAL 30 DAY ) <![CDATA[ <= ]]> date ( date_create )
+        GROUP BY
+            x
+    </select>
+
+    <select id="sumDayOrderDealPrice" resultType="top.fuyuaaa.shadowpuppets.model.analysis.XYData">
+        SELECT
+            date(
+            date_create ) AS
+            x,
+            round(
+            sum(
+            deal_price ) ) AS
+            y
+        FROM
+            goods_order
+        WHERE
+            DATE_SUB( CURDATE( )
+            , INTERVAL 30 DAY ) <![CDATA[ <= ]]> date ( date_create )
+        GROUP BY
+            x
+    </select>
+    <select id="countGoodsGroupByCategory" resultType="top.fuyuaaa.shadowpuppets.model.analysis.XYData">
+        SELECT c.category_name AS x, count(category_id) AS y
+        FROM goods g
+                 LEFT JOIN category c ON g.category_id = c.id
+        GROUP BY category_id;
+    </select>
+</mapper>

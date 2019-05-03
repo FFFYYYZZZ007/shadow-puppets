@@ -36,12 +36,7 @@ public interface ShoppingCartService {
 
     List<ShoppingCartVO> getShoppingCartVOList(Integer userId, Integer page, Integer pageSize);
 
-    /**
-     * 根据列表删除购物车(软删除)
-     * @param ids 要删除的id列表
-     * @return isSuccess
-     */
-    Boolean deleteShoppingCartList(List<Integer> ids);
+    void deleteAllShoppingCart();
 
-    Boolean isOwner(List<Integer> shoppingCartIdList);
+    void deleteOneShoppingCart(Integer shoppingCartId);
 }

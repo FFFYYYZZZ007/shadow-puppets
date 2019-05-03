@@ -5,7 +5,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
+import top.fuyuaaa.shadowpuppets.common.enums.ExEnum;
 import top.fuyuaaa.shadowpuppets.dao.ShoppingCartDao;
+import top.fuyuaaa.shadowpuppets.exceptions.ShoppingCartException;
 import top.fuyuaaa.shadowpuppets.holder.LoginUserHolder;
 import top.fuyuaaa.shadowpuppets.model.bo.GoodsBO;
 import top.fuyuaaa.shadowpuppets.model.bo.ShoppingCartBO;
@@ -42,7 +44,12 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
 
     @Override
     public Integer addShoppingCart(ShoppingCartBO shoppingCartBO) {
-        return shoppingCartDao.insertShoppingCart(BeanUtils.copyProperties(shoppingCartBO, ShoppingCartPO.class));
+        ShoppingCartPO shoppingCartPO = BeanUtils.copyProperties(shoppingCartBO, ShoppingCartPO.class);
+        //购物车中已有该商品
+        if (shoppingCartDao.getByUserIdAndGoodsId(shoppingCartPO) > 0) {
+            throw new ShoppingCartException(ExEnum.SHOPPING_CART_EXIST_GOODS.getMsg());
+        }
+        return shoppingCartDao.insertShoppingCart(shoppingCartPO);
     }
 
     @Override
@@ -82,27 +89,16 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
     }
 
     @Override
-    public Boolean deleteShoppingCartList(List<Integer> ids) {
-        try {
-            ids.forEach(id -> shoppingCartDao.deleteShoppingCart(id));
-        } catch (Exception e) {
-            log.error("删除购物车失败！错误信息e:{}", e.getMessage());
-            return false;
-        }
-        return true;
+    public void deleteAllShoppingCart() {
+        Integer userId = LoginUserHolder.instance().get().getId();
+        shoppingCartDao.deleteAllShoppingCartByUserId(userId);
     }
 
     @Override
-    public Boolean isOwner(List<Integer> shoppingCartIdList) {
-        Integer userId = LoginUserHolder.instance().get().getId();
-        List<ShoppingCartPO> shoppingCartPOList =
-                shoppingCartDao.queryShoppingCartListByUserId(userId);
-        Map<Integer, ShoppingCartPO> map =
-                shoppingCartPOList.stream().collect(Collectors.toMap(ShoppingCartPO::getId, Function.identity()));
-        shoppingCartIdList = shoppingCartIdList.stream().filter(shoppingCartId -> !map.containsKey(shoppingCartId)).collect(Collectors.toList());
-        if (CollectionUtils.isEmpty(shoppingCartIdList)) {
-            return true;
+    public void deleteOneShoppingCart(Integer shoppingCartId) {
+        Integer result = shoppingCartDao.deleteShoppingCart(shoppingCartId);
+        if (result != 1) {
+            throw new ShoppingCartException(ExEnum.SHOPPING_CART_IS_NOT_BELONGS.getMsg());
         }
-        return false;
     }
 }

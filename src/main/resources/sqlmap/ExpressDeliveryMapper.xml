@@ -14,17 +14,31 @@
         WHERE
         edi.date_delete IS NULL
         <if test="orderId != null and orderId != ''">
-            , edi.order_id like concat('%',#{orderId},'%')
+            AND edi.order_id like concat('%',#{orderId},'%')
         </if>
         <if test="expressCode != null and expressCode != ''">
-            , edi.express_code like concat('%',#{expressCode},'%')
+            AND edi.express_code like concat('%',#{expressCode},'%')
         </if>
-        <if test="deliveryStatus != null and expressCode != -1">
-            , edi.delivery_status = #{deliveryStatus}
+        <if test="deliveryStatus != null and deliveryStatus != -1">
+            AND edi.delivery_status = #{deliveryStatus}
         </if>
-        <if test="expressCarrier != null and expressCarrier != ''">
-            , edi.express_carrier = #{expressCarrier}
+        <if test="expressCarrier != null and expressCarrier != -1">
+            AND edi.express_carrier = #{expressCarrier}
         </if>
-        ORDER BY edi.date_update
+        ORDER BY edi.date_update desc
     </select>
+    <select id="findByOrderId" resultType="top.fuyuaaa.shadowpuppets.model.po.ExpressDeliveryPO">
+        SELECT
+        edi.*,
+        u.user_name
+        FROM
+        express_delivery_info edi
+        LEFT JOIN goods_order o ON edi.order_id = o.id
+        LEFT JOIN user u ON o.user_id = u.id
+        WHERE
+        edi.order_id = #{orderId}
+        ORDER BY edi.date_update desc
+    </select>
+
+
 </mapper>

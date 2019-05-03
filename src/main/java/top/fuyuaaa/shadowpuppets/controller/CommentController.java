@@ -7,7 +7,6 @@ import org.springframework.web.bind.annotation.*;
 import top.fuyuaaa.shadowpuppets.common.Result;
 import top.fuyuaaa.shadowpuppets.exceptions.ParamException;
 import top.fuyuaaa.shadowpuppets.model.PageVO;
-import top.fuyuaaa.shadowpuppets.model.po.GoodsCommentPO;
 import top.fuyuaaa.shadowpuppets.model.qo.CommentQO;
 import top.fuyuaaa.shadowpuppets.model.qo.OrderCommentQO;
 import top.fuyuaaa.shadowpuppets.model.vo.GoodsCommentVO;
@@ -25,28 +24,32 @@ public class CommentController {
     GoodsCommentService commentService;
 
     @PostMapping("/list")
-    public Result<PageVO<GoodsCommentVO>> getCommentList(@RequestBody CommentQO commentQO){
+    public Result<PageVO<GoodsCommentVO>> getCommentList(@RequestBody CommentQO commentQO) {
         this.fillCommentQO(commentQO);
         PageVO<GoodsCommentVO> pageVO = commentService.getListByGoodsId(commentQO);
         return Result.success(pageVO);
     }
 
     @PostMapping("/add")
-    public Result addComment(@RequestBody OrderCommentQO orderCommentQO){
+    public Result addComment(@RequestBody OrderCommentQO orderCommentQO) {
         this.validateCommentParam(orderCommentQO);
         commentService.addComment(orderCommentQO);
         return Result.success().setMsg("评论成功");
     }
 
     @PostMapping("/remove")
-    public Result removeComment(@RequestParam Integer commentId){
+    public Result removeComment(@RequestParam Integer commentId) {
         commentService.removeComment(commentId);
         return Result.success();
     }
 
     //==============================  private help method  ==============================
 
-
+    /**
+     * 校验评论参数
+     *
+     * @param orderCommentQO 评论参数
+     */
     private void validateCommentParam(OrderCommentQO orderCommentQO) {
         if (StringUtils.isEmpty(orderCommentQO.getContent())) {
             throw new ParamException("请输入评价内容");
@@ -56,6 +59,11 @@ public class CommentController {
         }
     }
 
+    /**
+     * 填充评论参数
+     *
+     * @param commentQO 评论参数
+     */
     private void fillCommentQO(CommentQO commentQO) {
         if (null == commentQO) {
             commentQO = new CommentQO();

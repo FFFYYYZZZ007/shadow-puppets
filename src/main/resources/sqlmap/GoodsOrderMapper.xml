@@ -12,11 +12,11 @@
         <if test="userId != null and userId != -1">
             and user_id = #{userId}
         </if>
+        <if test="orderId != null and orderId != ''">
+            and id like concat('%', #{orderId},'%')
+        </if>
         <if test="status != null and status != -1">
             and status = #{status}
-        </if>
-        <if test="deliveryStatus != null and deliveryStatus != -1">
-            and delivery_status = #{deliveryStatus}
         </if>
         order by date_update desc
     </select>
@@ -28,11 +28,11 @@
         <if test="userId != null and userId != -1">
             and user_id = #{userId}
         </if>
+        <if test="orderId != null and orderId != ''">
+            and id like concat('%', #{orderId},'%')
+        </if>
         <if test="status != null and status != -1">
             and status = #{status}
-        </if>
-        <if test="deliveryStatus != null and deliveryStatus != -1">
-            and delivery_status = #{deliveryStatus}
         </if>
         order by date_update desc
     </select>

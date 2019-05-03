@@ -15,10 +15,14 @@ import java.util.List;
 public interface GoodsOrderDao {
 
     @Insert("INSERT INTO `goods_order`" +
-            "(`id`,`user_id`, `express_fee`, `deal_price`, `status`,`delivery_status`, `date_create`, `date_update`) " +
-            "VALUES ( #{id}, #{userId},#{expressFee},#{dealPrice}, 0,0, now(), now());")
+            "(`id`,`user_id`, `express_fee`, `deal_price`, `status`, `date_create`, `date_update`) " +
+            "VALUES ( #{id}, #{userId},#{expressFee},#{dealPrice}, 0, now(), now());")
     void insertNewGoodsOrder(GoodsOrderPO goodsOrderPO);
 
+    @Insert("INSERT INTO `goods_order`" +
+            "(`id`,`user_id`, `express_fee`, `deal_price`, `status`, `date_create`, `date_update`) " +
+            "VALUES ( #{id}, #{userId},#{expressFee},#{dealPrice}, 0, #{dateCreate}, now());")
+    void insertNewGoodsOrder2(GoodsOrderPO goodsOrderPO);
 
     @Select("select * from goods_order where id = #{orderId} limit 1")
     GoodsOrderPO getById(String orderId);

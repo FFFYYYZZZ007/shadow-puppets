@@ -8,10 +8,15 @@ public class RandomUtils {
 
     /**
      * 随机生成6位数验证码
+     *
      * @return 6位随机数
      */
     public static String code6() {
         return String.valueOf((int) ((Math.random() * 9 + 1) * 100000));
+    }
+
+    public static Integer code2() {
+        return (int) ((Math.random() * 9 + 1)*10);
     }
 
 }

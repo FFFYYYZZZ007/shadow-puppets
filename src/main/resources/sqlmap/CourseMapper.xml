@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="top.fuyuaaa.shadowpuppets.dao.CourseDao">
+    <insert id="insert" useGeneratedKeys="true" keyColumn="id" keyProperty="id">
+        INSERT INTO course (`course_name`, `course_introduction`, `main_image_url`, `course_origin_price`,
+                            `course_discount_price`,
+                            `teacher_name`, `course_hours`, `paid_number`, `course_place`, `course_content`,
+                            `date_create`, `date_update`)
+        VALUES (#{courseName}, #{courseIntroduction}, #{mainImageUrl}, #{courseOriginPrice}, #{courseDiscountPrice},
+                #{teacherName},
+                #{courseHours}, #{paidNumber}, #{coursePlace}, #{courseContent}, now(), now())
+    </insert>
+    <update id="update">
+        UPDATE course SET date_update=now()
+        <if test="courseName != null and courseName != ''">
+            , course_name = #{courseName}
+        </if>
+        <if test="courseIntroduction != null and courseIntroduction != ''">
+            , course_introduction = #{courseIntroduction}
+        </if>
+        <if test="mainImageUrl != null and mainImageUrl != ''">
+            , main_image_url = #{mainImageUrl}
+        </if>
+        <if test="courseOriginPrice != null ">
+            , course_origin_price = #{courseOriginPrice}
+        </if>
+        <if test="courseDiscountPrice != null ">
+            , course_discount_price = #{courseDiscountPrice}
+        </if>
+        <if test="teacherName != null and teacherName != ''">
+            , teacher_name = #{teacherName}
+        </if>
+        <if test="courseHours != null">
+            , course_hours = #{courseHours}
+        </if>
+        <if test="paidNumber != null ">
+            , paid_number = #{paidNumber}
+        </if>
+        <if test="coursePlace != null and coursePlace != '' ">
+            , course_place = #{coursePlace}
+        </if>
+        <if test="courseContent != null and courseContent != '' ">
+            , course_content = #{courseContent}
+        </if>
+        WHERE id = #{id}
+    </update>
+    <select id="findList" resultType="top.fuyuaaa.shadowpuppets.model.po.CoursePO">
+        SELECT * FROM course
+        WHERE date_delete is null
+        <if test="keyword != null and keyword != ''">
+            -- and category_id = #{category}
+        </if>
+        ORDER BY date_update DESC
+    </select>
+</mapper>

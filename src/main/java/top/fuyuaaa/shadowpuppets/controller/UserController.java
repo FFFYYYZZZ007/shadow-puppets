@@ -9,13 +9,12 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.web.bind.annotation.*;
 import top.fuyuaaa.shadowpuppets.annotation.NeedLogin;
-import top.fuyuaaa.shadowpuppets.annotation.ValidateAdmin;
 import top.fuyuaaa.shadowpuppets.common.Result;
 import top.fuyuaaa.shadowpuppets.common.enums.ExEnum;
 import top.fuyuaaa.shadowpuppets.exceptions.ParamException;
-import top.fuyuaaa.shadowpuppets.model.PageVO;
+import top.fuyuaaa.shadowpuppets.holder.LoginUserHolder;
 import top.fuyuaaa.shadowpuppets.model.bo.UserBO;
-import top.fuyuaaa.shadowpuppets.model.qo.UserListQO;
+import top.fuyuaaa.shadowpuppets.model.bo.UserPasswordBO;
 import top.fuyuaaa.shadowpuppets.model.qo.UserLoginQO;
 import top.fuyuaaa.shadowpuppets.model.vo.UserVO;
 import top.fuyuaaa.shadowpuppets.service.UserService;
@@ -126,15 +125,6 @@ public class UserController {
                 Result.fail("手机号已被注册");
     }
 
-    @GetMapping("/test")
-    @NeedLogin
-    public Result xx(@RequestParam String xxx) {
-        if (xxx.equals("xxx")) {
-            throw new ParamException(ExEnum.PARAM_ERROR.getMsg());
-        }
-        return null;
-    }
-
     /**
      * 注册
      *
@@ -202,31 +192,24 @@ public class UserController {
         }
         UserBO userBO = convertUserVO2BO(userVO);
         boolean success = userService.updateUser(userBO);
-        return success ? Result.success() : Result.fail("修改用户信息失败");
+        return success ? Result.success().setMsg("修改成功") : Result.fail("修改用户信息失败");
     }
 
     @PostMapping("/info")
-    public Result<UserVO> getUserInfo(@RequestParam Integer userId) {
+    @NeedLogin
+    public Result<UserVO> getUserInfo() {
+        Integer userId = LoginUserHolder.instance().get().getId();
         UserVO userVO = userService.getByVOId(userId);
         return Result.success(userVO);
     }
 
-    //================================= 用户管理接口 ========================================
-
-    @PostMapping("/manager/list")
-    @ValidateAdmin
-    public Result<PageVO<UserVO>> getUserManagerList(@RequestBody UserListQO userListQO) {
-        fillQueryParam(userListQO);
-        PageVO<UserVO> userManagerList = userService.getUserManagerList(userListQO);
-        return Result.success(userManagerList);
+    @PostMapping("/changePassword")
+    @NeedLogin
+    public Result<Boolean> changePassword(@RequestBody UserPasswordBO userPasswordBO) {
+        userService.changePassword(userPasswordBO);
+        return Result.success(true).setMsg("修改密码成功");
     }
 
-    @PostMapping("/manager/remove")
-    @ValidateAdmin
-    public Result removeUserByManager(@RequestParam Integer userId) {
-        Boolean success = userService.removeUser(userId);
-        return success? Result.success().setMsg("移除用户成功"):Result.fail("移除用户失败");
-    }
 
     //============================== private help methods ==============================
 
@@ -300,7 +283,7 @@ public class UserController {
      */
     private void setLoginStatus(String token) {
         // 如果不存在，设置缓存
-        // TODO（这样做存在的问题，get和set不是原子性操作，考虑改成将整个步骤改成lua脚本）
+        // （这样做存在的问题，get和set不是原子性操作，考虑改成将整个步骤改成lua脚本）
         if (StringUtils.isEmpty((redisTemplate.opsForValue().get(token)))) {
             String value = String.valueOf(System.currentTimeMillis());
             redisTemplate.opsForValue().set(token, value, TOKEN_EXPIRE_TIME, TimeUnit.DAYS);
@@ -308,21 +291,4 @@ public class UserController {
         }
         redisTemplate.expire(token, TOKEN_EXPIRE_TIME, TimeUnit.DAYS);
     }
-
-    /**
-     * 填充分页参数(如果没有分页参数)
-     *
-     * @param userListQO 用户列表查询对象
-     */
-    private void fillQueryParam(UserListQO userListQO) {
-        Integer pageNum = userListQO.getPageNum();
-        Integer pageSize = userListQO.getPageSize();
-        if (pageNum == null || pageNum <= 0) {
-            userListQO.setPageNum(1);
-        }
-        if (pageSize == null || pageSize <= 0) {
-            userListQO.setPageSize(10);
-        }
-    }
-
 }

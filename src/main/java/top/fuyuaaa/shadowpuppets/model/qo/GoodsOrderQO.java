@@ -11,6 +11,6 @@ import lombok.Data;
 public class GoodsOrderQO extends BaseQO {
     private static final long serialVersionUID = -3163889531664735638L;
     private Integer userId;
+    private String orderId;
     private Integer status;
-    private Integer deliveryStatus;
 }

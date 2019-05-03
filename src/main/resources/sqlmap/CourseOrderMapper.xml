@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="top.fuyuaaa.shadowpuppets.dao.CourseOrderDao">
+    <select id="findList" resultType="top.fuyuaaa.shadowpuppets.model.po.CourseOrderPO">
+        SELECT * FROM course_order
+        WHERE date_delete is null
+        <if test="courseOrderStatus != null and courseOrderStatus != -1">
+            and course_order_status = #{courseOrderStatus}
+        </if>
+
+        <if test="keyword != null and keyword != ''">
+            and id like concat('%', #{keyword},'%')
+        </if>
+        ORDER BY date_update DESC
+    </select>
+</mapper>

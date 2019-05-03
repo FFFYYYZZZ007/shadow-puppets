@@ -15,8 +15,4 @@ public class EncodeUtils {
         }
         return DigestUtils.md5DigestAsHex(var.getBytes());
     }
-
-    public static void main(String[] args) {
-        System.out.println(encode("qqqqqqqqqqq").length());
-    }
 }

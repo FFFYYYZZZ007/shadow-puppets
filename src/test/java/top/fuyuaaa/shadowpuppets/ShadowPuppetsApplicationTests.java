@@ -8,12 +8,10 @@ import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
-import top.fuyuaaa.shadowpuppets.dao.ExpressDeliveryDao;
-import top.fuyuaaa.shadowpuppets.dao.GoodsCommentDao;
-import top.fuyuaaa.shadowpuppets.dao.GoodsDao;
-import top.fuyuaaa.shadowpuppets.dao.UserDao;
+import top.fuyuaaa.shadowpuppets.dao.*;
 import top.fuyuaaa.shadowpuppets.mapstruct.CommentConverter;
 import top.fuyuaaa.shadowpuppets.model.po.GoodsCommentPO;
+import top.fuyuaaa.shadowpuppets.model.qo.CourseQO;
 import top.fuyuaaa.shadowpuppets.model.qo.ExpressDeliveryQO;
 import top.fuyuaaa.shadowpuppets.model.qo.GoodsListQO;
 import top.fuyuaaa.shadowpuppets.model.qo.UserListQO;
@@ -98,5 +96,12 @@ public class ShadowPuppetsApplicationTests {
     GoodsCommentDao goodsCommentDao;
     @Test
     public void testGoodsCommentDao(){
+    }
+
+    @Autowired
+    CourseDao courseDao;
+    @Test
+    public void testGetCourseList(){
+        System.out.println(courseDao.findList(new CourseQO()));
     }
 }

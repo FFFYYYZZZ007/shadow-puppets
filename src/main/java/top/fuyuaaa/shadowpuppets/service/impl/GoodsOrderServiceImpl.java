@@ -134,6 +134,11 @@ public class GoodsOrderServiceImpl implements GoodsOrderService {
     }
 
     @Override
+    public Boolean confirmReceipt(String orderId) {
+        return goodsOrderDao.updateOrderStatus(OrderStatusEnum.PENDING_COMMENT.code(), orderId)==1;
+    }
+
+    @Override
     public String getAliPayUrl(String orderId) {
         GoodsOrderVO orderVO = this.getOrderVOById(orderId);
         String aliPayUrl = AlipayUtil.getAliPayUrl(orderVO);
@@ -148,8 +153,8 @@ public class GoodsOrderServiceImpl implements GoodsOrderService {
         if (!AlipayUtil.checkTradeStatus(String.valueOf(orderId))) {
             return false;
         }
-        //如果已支付，更改状态为已支付
-        goodsOrderDao.updateOrderStatus(OrderStatusEnum.PAID.code(), goodsOrderVO.getId());
+        //如果已支付，更改状态为待发货
+        goodsOrderDao.updateOrderStatus(OrderStatusEnum.PENDING_DELIVERY.code(), goodsOrderVO.getId());
         //添加物流信息，单号为空，状态为待发货
         ExpressDeliveryPO po = new ExpressDeliveryPO();
         po.setOrderId(orderId);

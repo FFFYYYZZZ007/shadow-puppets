@@ -27,6 +27,8 @@ public interface GoodsOrderService {
 
     Boolean cancelGoodsOrderById(String orderId);
 
+    Boolean confirmReceipt(String orderId);
+
     String getAliPayUrl(String orderId);
 
     Boolean checkOrderPaidAndUpdateOrderStatus(String orderId);

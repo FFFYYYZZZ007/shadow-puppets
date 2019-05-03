@@ -7,7 +7,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.CollectionUtils;
 import org.springframework.web.bind.annotation.*;
 import top.fuyuaaa.shadowpuppets.annotation.NeedLogin;
-import top.fuyuaaa.shadowpuppets.annotation.ValidateAdmin;
 import top.fuyuaaa.shadowpuppets.annotation.ValidateOrderOwner;
 import top.fuyuaaa.shadowpuppets.common.Result;
 import top.fuyuaaa.shadowpuppets.common.enums.ExEnum;
@@ -20,7 +19,6 @@ import top.fuyuaaa.shadowpuppets.model.vo.GoodsOrderVO;
 import top.fuyuaaa.shadowpuppets.service.GoodsOrderService;
 import top.fuyuaaa.shadowpuppets.service.GoodsService;
 import top.fuyuaaa.shadowpuppets.service.ShoppingCartService;
-
 
 /**
  * @author: fuyuaaa
@@ -107,15 +105,14 @@ public class GoodsOrderController {
         return Result.success("取消订单成功！", "取消订单成功！");
     }
 
-    //==============================  订单管理  ==============================
-
-    @PostMapping("/manager/list")
-    @ValidateAdmin
-    public Result<PageVO<GoodsOrderVO>> getGoodsOrderList(@RequestBody GoodsOrderQO goodsOrderQO) {
-        fillGoodsOrderQO(goodsOrderQO);
-        PageHelper.startPage(goodsOrderQO.getPageNum(), goodsOrderQO.getPageSize());
-        PageVO<GoodsOrderVO> pageVO = goodsOrderService.getOrderVOList(goodsOrderQO);
-        return Result.success(pageVO);
+    @PostMapping("/user/received")
+    @NeedLogin
+    @ValidateOrderOwner
+    public Result<String> confirmReceipt(@RequestParam String orderId) {
+        if (StringUtils.isEmpty(orderId) || !goodsOrderService.confirmReceipt(orderId)) {
+            return Result.fail("确认收货失败！");
+        }
+        return Result.success("取确认收货成功！", "确认收货成功！");
     }
 
     //==============================  private help methods  ==============================
@@ -129,12 +126,4 @@ public class GoodsOrderController {
         }
     }
 
-    private void fillGoodsOrderQO(GoodsOrderQO goodsOrderQO) {
-        if (null == goodsOrderQO.getPageNum()) {
-            goodsOrderQO.setPageNum(1);
-        }
-        if (null == goodsOrderQO.getPageSize()) {
-            goodsOrderQO.setPageSize(10);
-        }
-    }
 }

@@ -6,10 +6,13 @@ import com.github.pagehelper.PageInfo;
 import org.apache.commons.lang3.time.DateFormatUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import top.fuyuaaa.shadowpuppets.common.enums.ExEnum;
 import top.fuyuaaa.shadowpuppets.dao.UserDao;
 import top.fuyuaaa.shadowpuppets.exceptions.ParamException;
+import top.fuyuaaa.shadowpuppets.holder.LoginUserHolder;
 import top.fuyuaaa.shadowpuppets.model.PageVO;
 import top.fuyuaaa.shadowpuppets.model.bo.UserBO;
+import top.fuyuaaa.shadowpuppets.model.bo.UserPasswordBO;
 import top.fuyuaaa.shadowpuppets.model.po.UserPO;
 import top.fuyuaaa.shadowpuppets.model.qo.UserListQO;
 import top.fuyuaaa.shadowpuppets.model.vo.UserVO;
@@ -56,6 +59,17 @@ public class UserServiceImpl implements UserService {
         userPO.setSex(0);
         Integer res = userDao.insert(userPO);
         return res != null && res > 0;
+    }
+
+    @Override
+    public void changePassword(UserPasswordBO userPasswordBO) {
+        Integer userId = LoginUserHolder.instance().get().getId();
+        UserPO userPO = userDao.getById(userId);
+        if (!userPO.getPassword().equals(EncodeUtils.encode(userPasswordBO.getOldPassword()))) {
+            throw new RuntimeException(ExEnum.PASSWORD_CHANGE_ERROR.getMsg());
+        }
+        userPO.setPassword(EncodeUtils.encode(userPasswordBO.getNewPassword()));
+        userDao.updatePassword(userPO);
     }
 
     @Override

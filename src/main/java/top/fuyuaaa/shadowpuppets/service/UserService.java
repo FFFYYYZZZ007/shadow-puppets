@@ -2,6 +2,7 @@ package top.fuyuaaa.shadowpuppets.service;
 
 import top.fuyuaaa.shadowpuppets.model.PageVO;
 import top.fuyuaaa.shadowpuppets.model.bo.UserBO;
+import top.fuyuaaa.shadowpuppets.model.bo.UserPasswordBO;
 import top.fuyuaaa.shadowpuppets.model.qo.UserListQO;
 import top.fuyuaaa.shadowpuppets.model.vo.UserVO;
 
@@ -31,6 +32,8 @@ public interface UserService {
      * @return 添加结果
      */
     Boolean addUser(UserBO userBO);
+
+    void changePassword(UserPasswordBO userPasswordBO);
 
     UserBO getById(Integer id);
 

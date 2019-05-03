@@ -26,6 +26,14 @@ public class ExpressDeliveryVO implements Serializable {
     private Double expressPrice;
     private String userName;
 
-    private String dateCreate;
+    /**
+     * 发货时间
+     */
+    private String dateExpressStart;
+    /**
+     * 到货时间
+     */
+    private String dateExpressEnd;
+
     private String dateUpdate;
 }

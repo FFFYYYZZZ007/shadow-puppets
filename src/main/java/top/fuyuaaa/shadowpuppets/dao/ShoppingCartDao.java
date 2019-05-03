@@ -21,6 +21,9 @@ public interface ShoppingCartDao {
     @Select("select * from shopping_cart where id = #{id} limit 1")
     ShoppingCartPO getById(Integer id);
 
+    @Select("select count(*) from shopping_cart where user_id = #{userId} and goods_id = #{goodsId}")
+    Integer getByUserIdAndGoodsId(ShoppingCartPO shoppingCartPO);
+
     /**
      * 查询购物车列表 BY userId
      * @param userId 用户ID
@@ -29,6 +32,9 @@ public interface ShoppingCartDao {
     @Select("select * from shopping_cart where user_id = #{userId} and date_delete is null order by date_create desc")
     List<ShoppingCartPO> queryShoppingCartListByUserId(@Param("userId") Integer userId);
 
-    @Update("update shopping_cart set date_delete = now() where id=#{id} limit 1")
+    @Delete("delete from shopping_cart where id=#{id}")
     Integer deleteShoppingCart(Integer id);
+
+    @Delete("delete from shopping_cart where user_id=#{userId}")
+    Integer deleteAllShoppingCartByUserId(Integer userId);
 }

@@ -11,6 +11,7 @@ import com.alipay.api.response.*;
 import lombok.extern.slf4j.Slf4j;
 import top.fuyuaaa.shadowpuppets.exceptions.AlipayException;
 import top.fuyuaaa.shadowpuppets.model.bo.AlipayBO;
+import top.fuyuaaa.shadowpuppets.model.vo.CourseOrderVO;
 import top.fuyuaaa.shadowpuppets.model.vo.GoodsOrderVO;
 
 /**
@@ -30,6 +31,12 @@ public class AlipayUtil {
 
     private static final String TRADE_SUCCESS = "TRADE_SUCCESS";
 
+    /**
+     * 通过一系列参数构建跳转到支付宝的地址
+     *
+     * @param goodsOrderVO 订单VO
+     * @return 跳转到AliPay的地址
+     */
     public static String getAliPayUrl(GoodsOrderVO goodsOrderVO) {
         AlipayClient alipayClient = new DefaultAlipayClient(SERVER_URL, APP_ID, PRIVATE_KEY, FORMAT, CHARSET, ALIPAY_PUBLIC_KEY, SIGN_TYPE); //获得初始化的AlipayClient
         AlipayTradePagePayRequest request = new AlipayTradePagePayRequest();//创建API对应的request
@@ -81,7 +88,28 @@ public class AlipayUtil {
     }
 
     public static void main(String[] args) {
-//        getAliPayUrl(null, null);
-        checkTradeStatus("24");
+        System.out.println(checkTradeStatus("2019050222592875113212"));
+    }
+
+    public static String getAliPayUrl(CourseOrderVO courseOrderVO) {
+        AlipayClient alipayClient = new DefaultAlipayClient(SERVER_URL, APP_ID, PRIVATE_KEY, FORMAT, CHARSET, ALIPAY_PUBLIC_KEY, SIGN_TYPE); //获得初始化的AlipayClient
+        AlipayTradePagePayRequest request = new AlipayTradePagePayRequest();//创建API对应的request
+        AlipayBO alipayBO = new AlipayBO();
+        alipayBO.setOut_trade_no(courseOrderVO.getId());
+        alipayBO.setProduct_code("FAST_INSTANT_TRADE_PAY");
+        alipayBO.setTotal_amount(courseOrderVO.getDealPrice().doubleValue());
+        alipayBO.setSubject(courseOrderVO.getCourseVO().getCourseName());
+        alipayBO.setBody(JSON.toJSONString(courseOrderVO));
+        System.out.println(JSON.toJSONString(alipayBO));
+        request.setBizContent(JSON.toJSONString(alipayBO));
+        AlipayTradePagePayResponse response = null;
+        try {
+            response = alipayClient.pageExecute(request, "get");
+        } catch (AlipayApiException e) {
+            throw new AlipayException("调用支付宝接口出错");
+        }
+        String body = response.getBody();
+        log.info("支付宝返回信息: body: {}", body);
+        return body;
     }
 }

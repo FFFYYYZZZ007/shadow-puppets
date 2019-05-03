@@ -8,6 +8,10 @@ spring:
     host: 106.14.169.161
     port: 6379
     password: Fuyu742423672
+  cache:
+    cache-names: userDateAnalysis
+    couchbase:
+      expiration: 3
 
 mybatis:
   mapper-locations: classpath:sqlmap/*.xml

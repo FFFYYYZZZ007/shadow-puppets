@@ -11,9 +11,10 @@ import java.util.Date;
  * @creat: 2019-03-28 22:59
  */
 @Slf4j
+@SuppressWarnings("unused")
 public class DateUtils {
 
-    public final static String FORMAT_STR = "yyyy-MM-dd HH:mm:ss";
+    private final static String FORMAT_STR = "yyyy-MM-dd HH:mm:ss";
 
     public static String formatDate(Date date) {
         if (null == date) {

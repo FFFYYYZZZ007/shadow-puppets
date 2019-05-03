@@ -1,6 +1,7 @@
 package top.fuyuaaa.shadowpuppets.dao;
 
 import org.apache.ibatis.annotations.*;
+import top.fuyuaaa.shadowpuppets.model.analysis.NameValue;
 import top.fuyuaaa.shadowpuppets.model.bo.UserBO;
 import top.fuyuaaa.shadowpuppets.model.po.UserPO;
 import top.fuyuaaa.shadowpuppets.model.qo.UserListQO;
@@ -20,6 +21,9 @@ public interface UserDao {
     Integer insert(UserPO userPO);
 
     Integer update(UserBO userBO);
+
+    @Update("update user set password=#{password}, date_update=now() where id = #{id}")
+    Integer updatePassword(UserPO userPO);
 
     @Delete("delete from user where id = #{id} limit 1")
     Integer delete(Integer id);
@@ -49,4 +53,16 @@ public interface UserDao {
 
     @Select("select admin from user where id = #{userId} limit 1")
     Integer admin(Integer userId);
+
+    @Select("select count(*) from user where sex = #{sex}")
+    Integer countBySex(Integer sex);
+
+    @Select("SELECT count(*) FROM user WHERE MONTH(date_create)= MONTH(now())")
+    Integer countNewUserMonth();
+
+    @Select("SELECT count(*) FROM user WHERE WEEK(date_create)= WEEK(now())")
+    Integer countNewUserWeek();
+
+    @Select("SELECT user_name AS name FROM user ORDER BY date_update DESC LIMIT 30")
+    List<NameValue> getUserTagList();
 }

@@ -1,10 +1,13 @@
 package top.fuyuaaa.shadowpuppets.common;
 
+import java.io.Serializable;
+
 /**
  * @author: fuyuaaa
  * @creat: 2019-03-28 22:44
  */
-public class Result<T> {
+public class Result<T> implements Serializable {
+    private static final long serialVersionUID = -1703893484944227291L;
     private boolean success = false;
     private T data = null;
     private String msg = "";

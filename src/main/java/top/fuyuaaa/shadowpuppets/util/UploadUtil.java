@@ -12,6 +12,7 @@ import java.io.File;
  * @author: fuyuaaa
  * @creat: 2019-04-20 18:36
  */
+@SuppressWarnings("all")
 public class UploadUtil {
 
     /**
@@ -47,6 +48,18 @@ public class UploadUtil {
             throw new UploadException(ExEnum.UPLOAD_ERROR.getMsg());
         }
         String url = "https://fuyuaaa-bucket.oss-cn-hangzhou.aliyuncs.com/pics/goods/" + file.getName();
+        return url;
+    }
+
+    public static String uploadCourseMain2OSS(File file) {
+        try {
+            OSSClient ossClient = new OSSClient(END_POINT, ACCESS_KEY_ID, ACCESS_KEY_SECRET);
+            ossClient.putObject("fuyuaaa-bucket", "pics/courses/" + file.getName(), file);
+            ossClient.shutdown();
+        } catch (OSSException | ClientException e) {
+            throw new UploadException(ExEnum.UPLOAD_ERROR.getMsg());
+        }
+        String url = "https://fuyuaaa-bucket.oss-cn-hangzhou.aliyuncs.com/pics/courses/" + file.getName();
         return url;
     }
 }

@@ -9,7 +9,7 @@ package top.fuyuaaa.shadowpuppets.util;
 public class BeanUtils {
 
     /**
-     * 用过反射拷贝对象
+     * 用过反射拷贝对象（很弱智，考虑全部换成mapStruct）
      *
      * @param source 源对象
      * @param clazz  目标对象

@@ -73,7 +73,7 @@ public class GoodsServiceImpl implements GoodsService {
                 .map(goodsBO -> {
                     GoodsVO goodsVO = BeanUtils.copyProperties(goodsBO, GoodsVO.class);
                     goodsVO.setCategoryName(categoryService.getCategoryNameById(goodsBO.getCategoryId()));
-                    goodsVO.setOnSale(1 == goodsBO.getOnSale() ? "在售" : "已下架");
+                    goodsVO.setOnSale(1 == goodsBO.getOnSale() ? "在售" : "未上架");
                     return goodsVO;
                 })
                 .collect(Collectors.toList());

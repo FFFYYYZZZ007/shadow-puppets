@@ -57,16 +57,18 @@ public class ShoppingCartController {
     }
 
 
-    @PostMapping("/delete")
+    @PostMapping("/delete/all")
     @NeedLogin
-    public Result<Boolean> deleteShoppingCartList(@RequestBody List<Integer> ids) {
-        if (!shoppingCartService.isOwner(ids)) {
-            return Result.fail("删除购物车失败");
-        }
-        if (CollectionUtils.isEmpty(ids) || shoppingCartService.deleteShoppingCartList(ids)) {
-            return Result.success(true);
-        }
-        return Result.fail("删除失败");
+    public Result<Boolean> deleteAllShoppingCart() {
+        shoppingCartService.deleteAllShoppingCart();
+        return Result.success(true).setMsg("清空购物车成功");
+    }
+
+    @PostMapping("/delete/one")
+    @NeedLogin
+    public Result<Boolean> deleteOneShoppingCart(@RequestParam Integer shoppingCartId) {
+        shoppingCartService.deleteOneShoppingCart(shoppingCartId);
+        return Result.success(true).setMsg("从购物车中移除成功");
     }
 
     /**
