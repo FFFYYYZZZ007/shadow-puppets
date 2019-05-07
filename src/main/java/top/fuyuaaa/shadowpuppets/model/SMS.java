@@ -1,8 +1,6 @@
 package top.fuyuaaa.shadowpuppets.model;
 
-import com.alibaba.fastjson.JSON;
 import lombok.Data;
-import top.fuyuaaa.shadowpuppets.util.HttpUtils;
 
 /**
  * @author: fuyuaaa

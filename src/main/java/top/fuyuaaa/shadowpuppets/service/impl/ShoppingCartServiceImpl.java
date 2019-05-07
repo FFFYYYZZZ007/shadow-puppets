@@ -7,27 +7,24 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 import top.fuyuaaa.shadowpuppets.common.enums.ExEnum;
 import top.fuyuaaa.shadowpuppets.dao.ShoppingCartDao;
-import top.fuyuaaa.shadowpuppets.exceptions.ShoppingCartException;
-import top.fuyuaaa.shadowpuppets.holder.LoginUserHolder;
-import top.fuyuaaa.shadowpuppets.model.bo.GoodsBO;
+import top.fuyuaaa.shadowpuppets.common.exceptions.ParamException;
+import top.fuyuaaa.shadowpuppets.common.exceptions.ShoppingCartException;
+import top.fuyuaaa.shadowpuppets.common.holders.LoginUserHolder;
+import top.fuyuaaa.shadowpuppets.mapstruct.ShoppingCartConverter;
 import top.fuyuaaa.shadowpuppets.model.bo.ShoppingCartBO;
 import top.fuyuaaa.shadowpuppets.model.po.ShoppingCartPO;
 import top.fuyuaaa.shadowpuppets.model.vo.ShoppingCartVO;
 import top.fuyuaaa.shadowpuppets.service.GoodsService;
 import top.fuyuaaa.shadowpuppets.service.ShoppingCartService;
-import top.fuyuaaa.shadowpuppets.util.BeanUtils;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
-import java.util.function.Function;
-import java.util.stream.Collectors;
 
 /**
  * @author: fuyuaaa
  * @creat: 2019-04-11 22:18
  */
-@Service("shoppingCartService")
+@Service
 @Slf4j
 public class ShoppingCartServiceImpl implements ShoppingCartService {
 
@@ -43,13 +40,20 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
     }
 
     @Override
-    public Integer addShoppingCart(ShoppingCartBO shoppingCartBO) {
-        ShoppingCartPO shoppingCartPO = BeanUtils.copyProperties(shoppingCartBO, ShoppingCartPO.class);
+    public void addShoppingCart(ShoppingCartBO shoppingCartBO) {
+        Integer userId = LoginUserHolder.instance().get().getId();
+        validateShoppingCartParams(userId, shoppingCartBO);
+        shoppingCartBO.setUserId(userId);
+
+        ShoppingCartPO shoppingCartPO = ShoppingCartConverter.INSTANCE.toShoppingCartPO(shoppingCartBO);
         //购物车中已有该商品
         if (shoppingCartDao.getByUserIdAndGoodsId(shoppingCartPO) > 0) {
             throw new ShoppingCartException(ExEnum.SHOPPING_CART_EXIST_GOODS.getMsg());
         }
-        return shoppingCartDao.insertShoppingCart(shoppingCartPO);
+        Integer addResult = shoppingCartDao.insertShoppingCart(shoppingCartPO);
+        if (addResult != 1) {
+            throw new ShoppingCartException(ExEnum.SHOPPING_ADD_ERROR.getMsg());
+        }
     }
 
     @Override
@@ -59,33 +63,13 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
         if (CollectionUtils.isEmpty(shoppingCartPOList)) {
             return new ArrayList<>(0);
         }
-        return shoppingCartPOList.stream()
-                .map(shoppingCartPO -> BeanUtils.copyProperties(shoppingCartPO, ShoppingCartBO.class))
-                .collect(Collectors.toList());
+        return ShoppingCartConverter.INSTANCE.toShoppingCartBOList(shoppingCartPOList);
     }
 
     @Override
     public List<ShoppingCartVO> getShoppingCartVOList(Integer userId, Integer page, Integer pageSize) {
         List<ShoppingCartBO> shoppingCartList = this.getShoppingCartList(userId, page, pageSize);
-        return convertShoppingCartBO2VO(shoppingCartList);
-    }
-
-    /**
-     * 将BO转成VO
-     *
-     * @param shoppingCartBOList 购物车列表
-     * @return
-     */
-    private List<ShoppingCartVO> convertShoppingCartBO2VO(List<ShoppingCartBO> shoppingCartBOList) {
-        return shoppingCartBOList.stream()
-                .map(shoppingCartBO -> {
-                    ShoppingCartVO shoppingCartVO = BeanUtils.copyProperties(shoppingCartBO, ShoppingCartVO.class);
-                    GoodsBO goodsBO = goodsService.getGoodsDetailsById(shoppingCartBO.getGoodsId());
-                    shoppingCartVO.setKey(shoppingCartBO.getId());
-                    shoppingCartVO.setGoodsName(goodsBO.getGoodsName());
-                    shoppingCartVO.setPrice(goodsBO.getPrice());
-                    return shoppingCartVO;
-                }).collect(Collectors.toList());
+        return ShoppingCartConverter.INSTANCE.toShoppingCartVOList(shoppingCartList);
     }
 
     @Override
@@ -99,6 +83,23 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
         Integer result = shoppingCartDao.deleteShoppingCart(shoppingCartId);
         if (result != 1) {
             throw new ShoppingCartException(ExEnum.SHOPPING_CART_IS_NOT_BELONGS.getMsg());
+        }
+    }
+
+    //==============================  private help methods  ==============================
+
+    /**
+     * 校验参数
+     *
+     * @param userId         用户id
+     * @param shoppingCartBO 商品
+     */
+    private void validateShoppingCartParams(Integer userId, ShoppingCartBO shoppingCartBO) {
+        if (shoppingCartBO.getNum() == null || shoppingCartBO.getNum() < 1) {
+            shoppingCartBO.setNum(1);
+        }
+        if (null == userId || null == shoppingCartBO.getGoodsId()) {
+            throw new ParamException(ExEnum.PARAM_ERROR.getMsg());
         }
     }
 }

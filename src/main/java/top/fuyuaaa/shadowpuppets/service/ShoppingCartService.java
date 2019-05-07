@@ -21,9 +21,8 @@ public interface ShoppingCartService {
     /**
      * 新建一条购物车记录
      * @param shoppingCartBO 购物车业务类
-     * @return 插入结果
      */
-    Integer addShoppingCart(ShoppingCartBO shoppingCartBO);
+    void addShoppingCart(ShoppingCartBO shoppingCartBO);
 
     /**
      * 查询购物车列表

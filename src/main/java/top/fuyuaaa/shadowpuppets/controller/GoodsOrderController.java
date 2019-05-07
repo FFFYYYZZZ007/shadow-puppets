@@ -4,14 +4,11 @@ import com.github.pagehelper.PageHelper;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.util.CollectionUtils;
 import org.springframework.web.bind.annotation.*;
-import top.fuyuaaa.shadowpuppets.annotation.NeedLogin;
-import top.fuyuaaa.shadowpuppets.annotation.ValidateOrderOwner;
+import top.fuyuaaa.shadowpuppets.common.annotations.NeedLogin;
+import top.fuyuaaa.shadowpuppets.common.annotations.ValidateOrderOwner;
 import top.fuyuaaa.shadowpuppets.common.Result;
-import top.fuyuaaa.shadowpuppets.common.enums.ExEnum;
-import top.fuyuaaa.shadowpuppets.exceptions.ParamException;
-import top.fuyuaaa.shadowpuppets.holder.LoginUserHolder;
+import top.fuyuaaa.shadowpuppets.common.holders.LoginUserHolder;
 import top.fuyuaaa.shadowpuppets.model.PageVO;
 import top.fuyuaaa.shadowpuppets.model.bo.GoodsOrderBO;
 import top.fuyuaaa.shadowpuppets.model.qo.GoodsOrderQO;
@@ -39,9 +36,6 @@ public class GoodsOrderController {
     @PostMapping("/add")
     @NeedLogin
     public Result<String> addGoodsOrder(@RequestBody GoodsOrderBO goodsOrderBO) {
-        validateOrder(goodsOrderBO);
-        Integer userId = LoginUserHolder.instance().get().getId();
-        goodsOrderBO.setUserId(userId);
         goodsOrderBO = goodsOrderService.addNewGoodsOrder(goodsOrderBO);
         return Result.success(goodsOrderBO.getId());
     }
@@ -113,17 +107,6 @@ public class GoodsOrderController {
             return Result.fail("确认收货失败！");
         }
         return Result.success("取确认收货成功！", "确认收货成功！");
-    }
-
-    //==============================  private help methods  ==============================
-
-    /**
-     * 校验参数订单参数
-     */
-    private void validateOrder(GoodsOrderBO goodsOrderBO) {
-        if (CollectionUtils.isEmpty(goodsOrderBO.getGoodsOrderSimpleBOList()) && CollectionUtils.isEmpty(goodsOrderBO.getShoppingCartIdList())) {
-            throw new ParamException(ExEnum.ORDER_CREATE_PARAMS_ERROR.getMsg());
-        }
     }
 
 }

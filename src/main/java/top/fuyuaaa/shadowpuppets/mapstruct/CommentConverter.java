@@ -4,7 +4,7 @@ import org.mapstruct.*;
 import org.mapstruct.factory.Mappers;
 import top.fuyuaaa.shadowpuppets.model.po.GoodsCommentPO;
 import top.fuyuaaa.shadowpuppets.model.vo.GoodsCommentVO;
-import top.fuyuaaa.shadowpuppets.util.DateUtils;
+import top.fuyuaaa.shadowpuppets.common.utils.DateUtils;
 
 import java.util.List;
 

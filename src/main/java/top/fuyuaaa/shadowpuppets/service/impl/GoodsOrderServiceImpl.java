@@ -1,13 +1,16 @@
 package top.fuyuaaa.shadowpuppets.service.impl;
 
-import org.apache.commons.lang3.time.DateFormatUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
+import top.fuyuaaa.shadowpuppets.common.enums.ExEnum;
 import top.fuyuaaa.shadowpuppets.common.enums.ExpressDeliveryStatusEnum;
 import top.fuyuaaa.shadowpuppets.dao.*;
 import top.fuyuaaa.shadowpuppets.common.enums.OrderStatusEnum;
+import top.fuyuaaa.shadowpuppets.common.exceptions.ParamException;
+import top.fuyuaaa.shadowpuppets.common.holders.LoginUserHolder;
+import top.fuyuaaa.shadowpuppets.mapstruct.GoodsOrderConverter;
 import top.fuyuaaa.shadowpuppets.model.PageVO;
 import top.fuyuaaa.shadowpuppets.model.bo.GoodsOrderBO;
 import top.fuyuaaa.shadowpuppets.model.bo.GoodsOrderSimpleBO;
@@ -17,18 +20,13 @@ import top.fuyuaaa.shadowpuppets.model.po.GoodsOrderPO;
 import top.fuyuaaa.shadowpuppets.model.po.ShoppingCartPO;
 import top.fuyuaaa.shadowpuppets.model.qo.GoodsOrderQO;
 import top.fuyuaaa.shadowpuppets.model.vo.GoodsOrderVO;
-import top.fuyuaaa.shadowpuppets.model.vo.GoodsVO;
-import top.fuyuaaa.shadowpuppets.model.vo.GoodsVOWithNum;
 import top.fuyuaaa.shadowpuppets.service.GoodsOrderService;
 import top.fuyuaaa.shadowpuppets.service.GoodsService;
-import top.fuyuaaa.shadowpuppets.util.AlipayUtil;
-import top.fuyuaaa.shadowpuppets.util.BeanUtils;
-import top.fuyuaaa.shadowpuppets.util.UUIDUtils;
+import top.fuyuaaa.shadowpuppets.common.utils.AlipayUtil;
+import top.fuyuaaa.shadowpuppets.common.utils.UUIDUtils;
 
-import java.math.BigDecimal;
 import java.text.DecimalFormat;
 import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  * @author: fuyuaaa
@@ -53,7 +51,12 @@ public class GoodsOrderServiceImpl implements GoodsOrderService {
     @Override
     @Transactional(rollbackFor = Exception.class)
     public GoodsOrderBO addNewGoodsOrder(GoodsOrderBO goodsOrderBO) {
-        GoodsOrderPO goodsOrderPO = BeanUtils.copyProperties(goodsOrderBO, GoodsOrderPO.class);
+
+        validateOrder(goodsOrderBO);
+        Integer userId = LoginUserHolder.instance().get().getId();
+        goodsOrderBO.setUserId(userId);
+
+        GoodsOrderPO goodsOrderPO = GoodsOrderConverter.INSTANCE.toGoodsOrderPO(goodsOrderBO);
         goodsOrderPO.setId(UUIDUtils.getOrderCode());
         goodsOrderPO.setExpressFee(15.0);
         double price = 0;
@@ -80,21 +83,19 @@ public class GoodsOrderServiceImpl implements GoodsOrderService {
             //插入订单信息
             insertOrderInfo(goodsOrderPO.getId(), goodsOrderSimpleBOList);
         }
-        return BeanUtils.copyProperties(goodsOrderPO, GoodsOrderBO.class);
+        return GoodsOrderConverter.INSTANCE.toGoodsOrderBO(goodsOrderPO);
     }
 
     @Override
     public GoodsOrderBO getById(String orderId) {
         GoodsOrderPO goodsOrderPO = goodsOrderDao.getById(orderId);
-        GoodsOrderBO goodsOrderBO = BeanUtils.copyProperties(goodsOrderPO, GoodsOrderBO.class);
-        setGoodsOrderBO(goodsOrderBO, goodsOrderPO);
-        return goodsOrderBO;
+        return GoodsOrderConverter.INSTANCE.toGoodsOrderBO(goodsOrderPO);
     }
 
     @Override
     public GoodsOrderVO getOrderVOById(String orderId) {
         GoodsOrderBO goodsOrderBO = this.getById(orderId);
-        return convertOrderBO2VO(goodsOrderBO);
+        return GoodsOrderConverter.INSTANCE.toGoodsOrderVO(goodsOrderBO);
     }
 
     @Override
@@ -105,22 +106,13 @@ public class GoodsOrderServiceImpl implements GoodsOrderService {
     @Override
     public List<GoodsOrderBO> getOrderList(GoodsOrderQO goodsOrderQO) {
         List<GoodsOrderPO> goodsOrderPOList = goodsOrderDao.getOrderList(goodsOrderQO);
-        return goodsOrderPOList.stream()
-                .map(goodsOrderPO -> {
-                    GoodsOrderBO goodsOrderBO = BeanUtils.copyProperties(goodsOrderPO, GoodsOrderBO.class);
-                    setGoodsOrderBO(goodsOrderBO, goodsOrderPO);
-                    return goodsOrderBO;
-                })
-                .collect(Collectors.toList());
+        return GoodsOrderConverter.INSTANCE.toGoodsOrderBOList(goodsOrderPOList);
     }
 
     @Override
     public PageVO<GoodsOrderVO> getOrderVOList(GoodsOrderQO goodsOrderQO) {
         List<GoodsOrderBO> goodsOrderBOList = this.getOrderList(goodsOrderQO);
-        List<GoodsOrderVO> goodsOrderVOList =
-                goodsOrderBOList.stream()
-                        .map(this::convertOrderBO2VO)
-                        .collect(Collectors.toList());
+        List<GoodsOrderVO> goodsOrderVOList = GoodsOrderConverter.INSTANCE.toGoodsOrderVOList(goodsOrderBOList);
         return new PageVO<>(
                 goodsOrderQO.getPageNum(),
                 goodsOrderQO.getPageSize(),
@@ -130,7 +122,7 @@ public class GoodsOrderServiceImpl implements GoodsOrderService {
 
     @Override
     public Boolean cancelGoodsOrderById(String orderId) {
-        return goodsOrderDao.cancelGoodsOrder(orderId) > 0;
+        return goodsOrderDao.cancelGoodsOrder(orderId,OrderStatusEnum.CLOSED.code()) > 0;
     }
 
     @Override
@@ -141,8 +133,7 @@ public class GoodsOrderServiceImpl implements GoodsOrderService {
     @Override
     public String getAliPayUrl(String orderId) {
         GoodsOrderVO orderVO = this.getOrderVOById(orderId);
-        String aliPayUrl = AlipayUtil.getAliPayUrl(orderVO);
-        return aliPayUrl;
+        return AlipayUtil.getAliPayUrl(orderVO);
     }
 
     @Override
@@ -153,18 +144,33 @@ public class GoodsOrderServiceImpl implements GoodsOrderService {
         if (!AlipayUtil.checkTradeStatus(String.valueOf(orderId))) {
             return false;
         }
+        //修改订单=>待发货
+        this.ship(orderId, goodsOrderVO.getExpressFee());
+        return true;
+    }
+
+    @Override
+    public void ship(String orderId, Double expressFee) {
         //如果已支付，更改状态为待发货
-        goodsOrderDao.updateOrderStatus(OrderStatusEnum.PENDING_DELIVERY.code(), goodsOrderVO.getId());
+        goodsOrderDao.updateOrderStatus(OrderStatusEnum.PENDING_DELIVERY.code(), orderId);
         //添加物流信息，单号为空，状态为待发货
         ExpressDeliveryPO po = new ExpressDeliveryPO();
         po.setOrderId(orderId);
         po.setDeliveryStatus(ExpressDeliveryStatusEnum.UN_DELIVERY);
-        po.setExpressPrice(goodsOrderVO.getExpressFee());
+        po.setExpressPrice(expressFee);
         expressDeliveryDao.insert(po);
-        return true;
     }
 
     //==============================  private help methods  ==============================
+
+    /**
+     * 校验参数订单参数
+     */
+    private void validateOrder(GoodsOrderBO goodsOrderBO) {
+        if (CollectionUtils.isEmpty(goodsOrderBO.getGoodsOrderSimpleBOList()) && CollectionUtils.isEmpty(goodsOrderBO.getShoppingCartIdList())) {
+            throw new ParamException(ExEnum.ORDER_CREATE_PARAMS_ERROR.getMsg());
+        }
+    }
 
     /**
      * 根据购物车id列表去查询价格并统计出总价
@@ -219,36 +225,4 @@ public class GoodsOrderServiceImpl implements GoodsOrderService {
             goodsDao.reduceStock(shoppingCartPO.getGoodsId());
         }
     }
-
-    private void setGoodsOrderBO(GoodsOrderBO goodsOrderBO, GoodsOrderPO goodsOrderPO) {
-        //设置枚举类
-        goodsOrderBO.setStatus(OrderStatusEnum.find(goodsOrderPO.getStatus()));
-    }
-
-    private GoodsOrderVO convertOrderBO2VO(GoodsOrderBO goodsOrderBO) {
-        GoodsOrderVO goodsOrderVO = BeanUtils.copyProperties(goodsOrderBO, GoodsOrderVO.class);
-        List<GoodsOrderInfoPO> goodsOrderInfoPOList = goodsOrderDao.getOrderInfoByOrderId(goodsOrderBO.getId());
-
-        List<GoodsVOWithNum> goodsVOWithNumList = goodsOrderInfoPOList.stream()
-                .map(goodsOrderInfoPO -> {
-                    GoodsVO goodsVOById = goodsService.getGoodsVOById(goodsOrderInfoPO.getGoodsId());
-                    GoodsVOWithNum goodsVOWithNum = BeanUtils.copyProperties(goodsVOById, GoodsVOWithNum.class);
-                    goodsVOWithNum.setNum(goodsOrderInfoPO.getNum());
-                    return goodsVOWithNum;
-                })
-                .collect(Collectors.toList());
-        goodsOrderVO.setGoodsVOList(goodsVOWithNumList);
-
-        //设置用户名
-        goodsOrderVO.setUserName(userDao.getById(goodsOrderBO.getUserId()).getUserName());
-
-        //枚举类转成String
-        goodsOrderVO.setStatus(goodsOrderBO.getStatus().desc());
-
-        //设置时间
-        goodsOrderVO.setDateCreate(DateFormatUtils.format(goodsOrderBO.getDateCreate(), "yyyy-MM-dd HH:mm:ss"));
-        goodsOrderVO.setDateUpdate(DateFormatUtils.format(goodsOrderBO.getDateUpdate(), "yyyy-MM-dd HH:mm:ss"));
-        return goodsOrderVO;
-    }
-
 }

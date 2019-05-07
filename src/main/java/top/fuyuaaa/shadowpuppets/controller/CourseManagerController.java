@@ -4,9 +4,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-import top.fuyuaaa.shadowpuppets.annotation.NeedLogin;
-import top.fuyuaaa.shadowpuppets.annotation.ValidateAdmin;
-import top.fuyuaaa.shadowpuppets.annotation.ValidateCourseOrderOwner;
+import top.fuyuaaa.shadowpuppets.common.annotations.ValidateAdmin;
 import top.fuyuaaa.shadowpuppets.common.Result;
 import top.fuyuaaa.shadowpuppets.common.enums.CourseOrderStatusEnum;
 import top.fuyuaaa.shadowpuppets.model.PageVO;
@@ -15,8 +13,8 @@ import top.fuyuaaa.shadowpuppets.model.qo.CourseQO;
 import top.fuyuaaa.shadowpuppets.model.vo.CourseVO;
 import top.fuyuaaa.shadowpuppets.service.CourseOrderService;
 import top.fuyuaaa.shadowpuppets.service.CourseService;
-import top.fuyuaaa.shadowpuppets.util.FileUtils;
-import top.fuyuaaa.shadowpuppets.util.UploadUtil;
+import top.fuyuaaa.shadowpuppets.common.utils.FileUtils;
+import top.fuyuaaa.shadowpuppets.common.utils.UploadUtil;
 
 import java.io.File;
 
@@ -35,7 +33,6 @@ public class CourseManagerController {
     CourseOrderService courseOrderService;
 
     @PostMapping("/list")
-    @NeedLogin
     @ValidateAdmin
     public Result<PageVO<CourseVO>> getList(@RequestBody CourseQO courseQO){
         PageVO<CourseVO> pageVO = courseService.getVOList(courseQO);
@@ -43,7 +40,6 @@ public class CourseManagerController {
     }
 
     @PostMapping("/add")
-    @NeedLogin
     @ValidateAdmin
     public Result<Boolean> add(@RequestBody CourseBO courseBO) {
         courseBO.setPaidNumber(0);
@@ -52,7 +48,6 @@ public class CourseManagerController {
     }
 
     @PostMapping("/update")
-    @NeedLogin
     @ValidateAdmin
     public Result<Boolean> update(@RequestBody CourseBO courseBO) {
         courseService.update(courseBO);
@@ -60,7 +55,6 @@ public class CourseManagerController {
     }
 
     @PostMapping("/delete")
-    @NeedLogin
     @ValidateAdmin
     public Result<Boolean> delete(@RequestParam Integer id) {
         courseService.delete(id);
@@ -68,7 +62,6 @@ public class CourseManagerController {
     }
 
     @PostMapping("/image/main/upload")
-    @NeedLogin
     @ValidateAdmin
     public Result<String> uploadGoodsMainImage(@RequestParam("file") MultipartFile multipartFile) {
         File file = FileUtils.convertMultipartFile2File(multipartFile);
@@ -76,8 +69,9 @@ public class CourseManagerController {
         return Result.success(resultUrl);
     }
 
+    //==============================  order related  ==============================
+
     @PostMapping("/order/endCourse")
-    @NeedLogin
     @ValidateAdmin
     public Result<Boolean> endCourse(@RequestParam String orderId){
         courseOrderService.updateStatus(orderId, CourseOrderStatusEnum.PENDING_CONFIRMED.code());

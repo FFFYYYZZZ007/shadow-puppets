@@ -33,4 +33,5 @@ public interface GoodsOrderService {
 
     Boolean checkOrderPaidAndUpdateOrderStatus(String orderId);
 
+    void ship(String orderId, Double expressFee);
 }

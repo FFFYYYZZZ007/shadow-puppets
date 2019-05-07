@@ -118,6 +118,12 @@
             <artifactId>mapstruct-jdk8</artifactId>
             <version>${mapstruct.version}</version>
         </dependency>
+        <!-- redisson -->
+        <dependency>
+            <groupId>org.redisson</groupId>
+            <artifactId>redisson</artifactId>
+            <version>3.5.7</version>
+        </dependency>
     </dependencies>
 
     <build>

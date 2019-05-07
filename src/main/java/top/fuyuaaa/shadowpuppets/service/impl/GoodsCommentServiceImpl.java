@@ -2,21 +2,22 @@ package top.fuyuaaa.shadowpuppets.service.impl;
 
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import top.fuyuaaa.shadowpuppets.annotation.NeedLogin;
+import top.fuyuaaa.shadowpuppets.common.annotations.NeedLogin;
 import top.fuyuaaa.shadowpuppets.common.enums.ExEnum;
 import top.fuyuaaa.shadowpuppets.common.enums.OrderStatusEnum;
 import top.fuyuaaa.shadowpuppets.dao.GoodsCommentDao;
 import top.fuyuaaa.shadowpuppets.dao.GoodsOrderDao;
-import top.fuyuaaa.shadowpuppets.exceptions.CommentException;
-import top.fuyuaaa.shadowpuppets.exceptions.OrderOwnerException;
-import top.fuyuaaa.shadowpuppets.holder.LoginUserHolder;
+import top.fuyuaaa.shadowpuppets.common.exceptions.CommentException;
+import top.fuyuaaa.shadowpuppets.common.exceptions.OrderOwnerException;
+import top.fuyuaaa.shadowpuppets.common.exceptions.ParamException;
+import top.fuyuaaa.shadowpuppets.common.holders.LoginUserHolder;
 import top.fuyuaaa.shadowpuppets.mapstruct.CommentConverter;
 import top.fuyuaaa.shadowpuppets.model.LoginUserInfo;
 import top.fuyuaaa.shadowpuppets.model.PageVO;
-import top.fuyuaaa.shadowpuppets.model.bo.GoodsOrderBO;
 import top.fuyuaaa.shadowpuppets.model.po.GoodsCommentPO;
 import top.fuyuaaa.shadowpuppets.model.po.GoodsOrderInfoPO;
 import top.fuyuaaa.shadowpuppets.model.po.GoodsOrderPO;
@@ -46,7 +47,10 @@ public class GoodsCommentServiceImpl implements GoodsCommentService {
     @NeedLogin
     @Transactional(rollbackFor = Exception.class)
     public void addComment(OrderCommentQO orderCommentQO) {
-        this.validateOrderOwner(orderCommentQO);
+        validateCommentParam(orderCommentQO);
+        validateOrderOwner(orderCommentQO);
+
+        //考虑到一个订单可能有好多个商品 + 评论是针对订单级别，SO 这样搞
         List<GoodsOrderInfoPO> goodsOrderInfoPOList = goodsOrderDao.getOrderInfoByOrderId(orderCommentQO.getOrderId());
         List<Integer> goodsIdList = goodsOrderInfoPOList.stream()
                 .map(goodsOrderInfoPO -> goodsOrderInfoPO.getGoodsId())
@@ -76,6 +80,7 @@ public class GoodsCommentServiceImpl implements GoodsCommentService {
 
     @Override
     public PageVO<GoodsCommentVO> getListByGoodsId(CommentQO commentQO) {
+        fillCommentQO(commentQO);
         PageHelper.startPage(commentQO.getPageNum(), commentQO.getPageSize());
         List<GoodsCommentPO> listByGoodsId = goodsCommentDao.findListByGoodsId(commentQO.getGoodsId());
         PageInfo<GoodsCommentPO> pageInfo = new PageInfo<>(listByGoodsId);
@@ -86,6 +91,38 @@ public class GoodsCommentServiceImpl implements GoodsCommentService {
     }
 
     //==============================  private help methods  ==============================
+
+
+    /**
+     * 校验评论参数
+     *
+     * @param orderCommentQO 评论参数
+     */
+    private void validateCommentParam(OrderCommentQO orderCommentQO) {
+        if (StringUtils.isEmpty(orderCommentQO.getContent())) {
+            throw new ParamException("请输入评价内容");
+        }
+        if (null == orderCommentQO.getStarLevel() || 0 == orderCommentQO.getStarLevel()) {
+            throw new ParamException("请选择满意程度");
+        }
+    }
+
+    /**
+     * 填充评论参数
+     *
+     * @param commentQO 评论参数
+     */
+    private void fillCommentQO(CommentQO commentQO) {
+        if (null == commentQO) {
+            commentQO = new CommentQO();
+        }
+        if (null == commentQO.getPageNum() || 0 >= commentQO.getPageNum()) {
+            commentQO.setPageNum(1);
+        }
+        if (null == commentQO.getPageSize() || 0 >= commentQO.getPageSize()) {
+            commentQO.setPageSize(10);
+        }
+    }
 
     /**
      * 检验是否已经评论过

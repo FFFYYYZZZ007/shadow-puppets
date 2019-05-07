@@ -1,6 +1,5 @@
 package top.fuyuaaa.shadowpuppets.service;
 
-import top.fuyuaaa.shadowpuppets.common.enums.ExpressDeliveryStatusEnum;
 import top.fuyuaaa.shadowpuppets.model.PageVO;
 import top.fuyuaaa.shadowpuppets.model.qo.ExpressDeliveryQO;
 import top.fuyuaaa.shadowpuppets.model.qo.ShipQO;
@@ -12,11 +11,13 @@ import top.fuyuaaa.shadowpuppets.model.vo.ExpressDeliveryVO;
  */
 public interface ExpressDeliveryService {
 
-    Boolean updateExpressDeliveryStatus(String orderId, ExpressDeliveryStatusEnum expressDeliveryStatusEnum);
+    void updateExpressDeliveryStatus(String orderId, Integer deliveryStatus);
 
     PageVO<ExpressDeliveryVO> getList(ExpressDeliveryQO expressDeliveryQO);
 
     void ship(ShipQO shipQO);
 
     ExpressDeliveryVO getByOrderId(String orderId);
+
+    String codeGenerate(Integer expressCarrier);
 }

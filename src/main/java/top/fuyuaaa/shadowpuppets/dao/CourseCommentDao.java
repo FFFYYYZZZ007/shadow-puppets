@@ -11,8 +11,8 @@ import java.util.List;
  */
 @Mapper
 public interface CourseCommentDao {
-    @Insert("insert into course_comment (user_id,course_id,star_level,content,date_create,date_update) " +
-            "values (#{userId},#{courseId},#{starLevel},#{content},now(),now())")
+    @Insert("insert into course_comment (user_id,order_id,course_id,star_level,content,date_create,date_update) " +
+            "values (#{userId},#{orderId},#{courseId},#{starLevel},#{content},now(),now())")
     @Options(keyColumn = "id",keyProperty = "id",useGeneratedKeys = true)
     Integer insert(CourseCommentPO courseCommentPO);
 
@@ -22,4 +22,7 @@ public interface CourseCommentDao {
     @Select("select c.*,u.user_name from course_comment c left join user u on c.user_id = u.id " +
             "where c.course_id = #{courseId} order by c.date_create desc")
     List<CourseCommentPO> findListByCourseId(Integer courseId);
+
+    @Select("select count(*) from course_comment where order_id = #{orderId}")
+    Integer getByOrderId(String orderId);
 }

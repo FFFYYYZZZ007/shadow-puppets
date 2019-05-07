@@ -6,7 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import top.fuyuaaa.shadowpuppets.common.enums.ExEnum;
 import top.fuyuaaa.shadowpuppets.dao.CourseDao;
-import top.fuyuaaa.shadowpuppets.exceptions.CourseException;
+import top.fuyuaaa.shadowpuppets.common.exceptions.CourseException;
 import top.fuyuaaa.shadowpuppets.mapstruct.CourseConverter;
 import top.fuyuaaa.shadowpuppets.model.PageVO;
 import top.fuyuaaa.shadowpuppets.model.bo.CourseBO;

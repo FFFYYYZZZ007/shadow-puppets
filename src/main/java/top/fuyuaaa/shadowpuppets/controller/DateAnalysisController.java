@@ -7,7 +7,7 @@ import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import top.fuyuaaa.shadowpuppets.annotation.ValidateAdmin;
+import top.fuyuaaa.shadowpuppets.common.annotations.ValidateAdmin;
 import top.fuyuaaa.shadowpuppets.common.Result;
 import top.fuyuaaa.shadowpuppets.dao.DateAnalysisDao;
 import top.fuyuaaa.shadowpuppets.model.analysis.XYData;

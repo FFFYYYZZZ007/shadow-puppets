@@ -10,6 +10,9 @@
             and course_order_status = #{courseOrderStatus}
         </if>
 
+        <if test="userId != null and userId != -1">
+            and user_id = #{userId}
+        </if>
         <if test="keyword != null and keyword != ''">
             and id like concat('%', #{keyword},'%')
         </if>

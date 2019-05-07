@@ -8,15 +8,14 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.method.HandlerMethod;
 
 import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
-import top.fuyuaaa.shadowpuppets.holder.LoginUserHolder;
+import top.fuyuaaa.shadowpuppets.common.holders.LoginUserHolder;
+import top.fuyuaaa.shadowpuppets.mapstruct.UserConverter;
 import top.fuyuaaa.shadowpuppets.model.LoginUserInfo;
 import top.fuyuaaa.shadowpuppets.model.bo.UserBO;
 import top.fuyuaaa.shadowpuppets.service.UserService;
-import top.fuyuaaa.shadowpuppets.util.BeanUtils;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.lang.reflect.Method;
 
 /**
  * @author: fuyuaaa
@@ -56,7 +55,7 @@ public class LoginInterceptor extends HandlerInterceptorAdapter {
         if (null == userBO || null == userBO.getId()) {
             return false;
         }
-        LoginUserInfo loginUserInfo = BeanUtils.copyProperties(userBO, LoginUserInfo.class);
+        LoginUserInfo loginUserInfo = UserConverter.INSTANCE.toLoginUserInfo(userBO);
         LoginUserHolder.instance().put(loginUserInfo);
         return true;
     }

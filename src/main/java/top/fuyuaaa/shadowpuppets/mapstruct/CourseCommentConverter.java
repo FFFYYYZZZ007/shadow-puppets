@@ -3,13 +3,13 @@ package top.fuyuaaa.shadowpuppets.mapstruct;
 import org.mapstruct.*;
 import org.mapstruct.factory.Mappers;
 import top.fuyuaaa.shadowpuppets.dao.CourseOrderDao;
-import top.fuyuaaa.shadowpuppets.holder.LoginUserHolder;
+import top.fuyuaaa.shadowpuppets.common.holders.LoginUserHolder;
 import top.fuyuaaa.shadowpuppets.model.po.CourseCommentPO;
 import top.fuyuaaa.shadowpuppets.model.po.CourseOrderPO;
 import top.fuyuaaa.shadowpuppets.model.qo.OrderCommentQO;
 import top.fuyuaaa.shadowpuppets.model.vo.CourseCommentVO;
-import top.fuyuaaa.shadowpuppets.util.DateUtils;
-import top.fuyuaaa.shadowpuppets.util.SpringUtil;
+import top.fuyuaaa.shadowpuppets.common.utils.DateUtils;
+import top.fuyuaaa.shadowpuppets.common.utils.SpringUtil;
 
 import java.util.List;
 
@@ -18,6 +18,7 @@ import java.util.List;
  * @creat: 2019-05-04 22:51
  */
 @Mapper(componentModel="spring")
+@SuppressWarnings("all")
 public abstract class CourseCommentConverter {
     public final static CourseCommentConverter INSTANCE = Mappers.getMapper(CourseCommentConverter.class);
 

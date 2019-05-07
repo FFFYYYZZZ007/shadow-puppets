@@ -3,7 +3,7 @@ package top.fuyuaaa.shadowpuppets.interceptor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
-import top.fuyuaaa.shadowpuppets.holder.AbstractOncePerRequestContextHolder;
+import top.fuyuaaa.shadowpuppets.common.holders.AbstractOncePerRequestContextHolder;
 
 /**
  * @author fuyuaaa

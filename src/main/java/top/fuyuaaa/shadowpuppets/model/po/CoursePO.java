@@ -23,6 +23,7 @@ public class CoursePO extends BaseModel {
     private BigDecimal courseOriginPrice;
     private BigDecimal courseDiscountPrice;
     private String teacherName;
+    private String teacherTel;
     private Integer courseHours;
     private Integer paidNumber;
     private String coursePlace;

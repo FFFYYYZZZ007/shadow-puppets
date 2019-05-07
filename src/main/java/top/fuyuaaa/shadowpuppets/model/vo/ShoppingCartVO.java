@@ -15,6 +15,7 @@ import java.util.Date;
 public class ShoppingCartVO implements Serializable {
     private static final long serialVersionUID = 54524992817888014L;
     private Integer key;
+    private Integer goodsId;
     private String goodsName;
     private Double price;
     private Integer num;

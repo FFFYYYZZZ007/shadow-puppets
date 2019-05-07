@@ -1,7 +1,6 @@
 package top.fuyuaaa.shadowpuppets.dao;
 
 import org.apache.ibatis.annotations.*;
-import top.fuyuaaa.shadowpuppets.common.enums.ExpressDeliveryStatusEnum;
 import top.fuyuaaa.shadowpuppets.model.po.ExpressDeliveryPO;
 import top.fuyuaaa.shadowpuppets.model.qo.ExpressDeliveryQO;
 import top.fuyuaaa.shadowpuppets.model.qo.ShipQO;
@@ -24,7 +23,7 @@ public interface ExpressDeliveryDao {
     Integer ship(ShipQO shipQO);
 
     @Update("update express_delivery_info set delivery_status = #{deliveryStatusCode}, date_update = now() " +
-            "where order_id = #{orderId} and delivery_status = #{deliveryStatusCode} - 1")
+            "where order_id = #{orderId}")
     Integer updateDeliveryStatus(@Param("orderId") String orderId, @Param("deliveryStatusCode")Integer deliveryStatusCode);
 
     @Update("update express_delivery_info set date_express_end = now(), date_update = now() " +

@@ -4,15 +4,12 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.web.bind.annotation.*;
-import top.fuyuaaa.shadowpuppets.annotation.NeedLogin;
-import top.fuyuaaa.shadowpuppets.annotation.ValidateCourseOrderOwner;
+import top.fuyuaaa.shadowpuppets.common.annotations.NeedLogin;
+import top.fuyuaaa.shadowpuppets.common.annotations.ValidateCourseOrderOwner;
 import top.fuyuaaa.shadowpuppets.common.Result;
 import top.fuyuaaa.shadowpuppets.common.enums.CourseOrderStatusEnum;
-import top.fuyuaaa.shadowpuppets.holder.LoginUserHolder;
-import top.fuyuaaa.shadowpuppets.model.LoginUserInfo;
 import top.fuyuaaa.shadowpuppets.model.PageVO;
 import top.fuyuaaa.shadowpuppets.model.po.CourseOrderPO;
-import top.fuyuaaa.shadowpuppets.model.po.CoursePO;
 import top.fuyuaaa.shadowpuppets.model.qo.CourseOrderQO;
 import top.fuyuaaa.shadowpuppets.model.qo.CourseQO;
 import top.fuyuaaa.shadowpuppets.model.vo.CourseOrderVO;
@@ -54,6 +51,8 @@ public class CourseController {
         CourseVO courseVO = courseService.getCourseVOById(id);
         return Result.success(courseVO);
     }
+
+    //==============================  order related  ==============================
 
     @PostMapping("/order/add")
     @NeedLogin
@@ -98,7 +97,7 @@ public class CourseController {
     @NeedLogin
     @ValidateCourseOrderOwner
     public Result<Boolean> confirmStudied(@RequestParam String orderId) {
-        //待结课=>待评价
+        //待结课 => 待评价
         courseOrderService.updateStatus(orderId, CourseOrderStatusEnum.PENGDING_COMMENT.code());
         return Result.success(true).setMsg("确认结课成功");
     }

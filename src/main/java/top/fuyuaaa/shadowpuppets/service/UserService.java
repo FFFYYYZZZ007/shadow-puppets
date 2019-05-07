@@ -6,6 +6,8 @@ import top.fuyuaaa.shadowpuppets.model.bo.UserPasswordBO;
 import top.fuyuaaa.shadowpuppets.model.qo.UserListQO;
 import top.fuyuaaa.shadowpuppets.model.vo.UserVO;
 
+import java.util.Map;
+
 /**
  * @author: fuyuaaa
  * @creat: 2019-03-28 22:41
@@ -31,19 +33,21 @@ public interface UserService {
      * @param userBO 用户
      * @return 添加结果
      */
-    Boolean addUser(UserBO userBO);
+    void addUser(UserBO userBO,String code);
+
+    void sendCode(String tel);
 
     void changePassword(UserPasswordBO userPasswordBO);
 
-    UserBO getById(Integer id);
-
-    Boolean updateUser(UserBO userBO);
+    void updateUser(UserVO userVO);
 
     UserVO getByVOId(Integer id);
 
     PageVO<UserVO> getUserManagerList(UserListQO userListQO);
 
-    Boolean removeUser(Integer id);
+    void removeUser(Integer id);
 
     Boolean isAdmin(Integer userId);
+
+    Map<String, Object> getUserManagerHeader();
 }

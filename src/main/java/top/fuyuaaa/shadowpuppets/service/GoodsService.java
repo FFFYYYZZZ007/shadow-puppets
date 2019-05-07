@@ -1,8 +1,8 @@
 package top.fuyuaaa.shadowpuppets.service;
 
+import org.springframework.web.multipart.MultipartFile;
 import top.fuyuaaa.shadowpuppets.model.PageVO;
 import top.fuyuaaa.shadowpuppets.model.bo.GoodsBO;
-import top.fuyuaaa.shadowpuppets.model.po.GoodsPO;
 import top.fuyuaaa.shadowpuppets.model.qo.GoodsListQO;
 import top.fuyuaaa.shadowpuppets.model.vo.GoodsVO;
 
@@ -13,6 +13,7 @@ import java.util.Map;
  * @author: fuyuaaa
  * @creat: 2019-04-08 22:21
  */
+@SuppressWarnings("all")
 public interface GoodsService {
 
     /**
@@ -47,9 +48,15 @@ public interface GoodsService {
      */
     List<GoodsVO> getVOList(GoodsListQO goodsListQO);
 
+    /**
+     * 获取商品列表
+     *
+     * @param goodsListQO 商品查询类
+     * @return 商品列表
+     */
     PageVO<GoodsVO> getGoodsPageVO(GoodsListQO goodsListQO);
 
-    //===========后台管理
+    //==============================  后台管理  ==============================
 
     /**
      * 管理员添加商品
@@ -57,7 +64,7 @@ public interface GoodsService {
      * @param goodsBO 商品
      * @return true/false
      */
-    Boolean addManagerGoods(GoodsBO goodsBO);
+    void addManagerGoods(GoodsBO goodsBO);
 
     /**
      * 管理员修改商品
@@ -65,7 +72,7 @@ public interface GoodsService {
      * @param goodsBO 商品
      * @return true/false
      */
-    Boolean updateManagerGoods(GoodsBO goodsBO);
+    void updateManagerGoods(GoodsBO goodsBO);
 
     /**
      * 管理员删除商品
@@ -73,7 +80,7 @@ public interface GoodsService {
      * @param goodsId 商品ID
      * @return true/false
      */
-    Boolean removeManagerGoods(Integer goodsId);
+    void removeManagerGoods(Integer goodsId);
 
     /**
      * 更新商品的图片地址
@@ -84,7 +91,7 @@ public interface GoodsService {
      */
     Boolean updateImagesUrls(Integer goodsId, String imagesUrls);
 
-    Boolean addGoodsImage(Integer goodsId, String resultUrl);
+    String addGoodsImage(MultipartFile multipartFile, Integer goodsId);
 
     void removeGoodsImage(Integer goodsId, String imageUrl);
 
@@ -96,5 +103,5 @@ public interface GoodsService {
      */
     Integer countByCategoryId(Integer categoryId);
 
-    Map<String,Integer> categoryStatisticsInfo();
+    Map<String, Integer> categoryStatisticsInfo();
 }

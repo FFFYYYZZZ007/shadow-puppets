@@ -5,7 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import top.fuyuaaa.shadowpuppets.common.Result;
 import top.fuyuaaa.shadowpuppets.common.enums.ExEnum;
-import top.fuyuaaa.shadowpuppets.exceptions.ParamException;
+import top.fuyuaaa.shadowpuppets.common.exceptions.ParamException;
 import top.fuyuaaa.shadowpuppets.model.PageVO;
 import top.fuyuaaa.shadowpuppets.model.qo.GoodsListQO;
 import top.fuyuaaa.shadowpuppets.model.vo.GoodsVO;

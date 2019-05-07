@@ -53,6 +53,6 @@ public interface CategoryDao {
      * @param id 类别ID
      * @return true/false
      */
-    @Delete("update category set date_delete = now() where id = #{id} limit 1")
+    @Delete("delete from category where id = #{id}")
     Integer deleteCategory(Integer id);
 }

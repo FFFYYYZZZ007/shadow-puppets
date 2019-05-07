@@ -1,6 +1,7 @@
 package top.fuyuaaa.shadowpuppets.service;
 
 import top.fuyuaaa.shadowpuppets.model.Category;
+import top.fuyuaaa.shadowpuppets.model.vo.CategoryVO;
 
 import java.util.List;
 
@@ -18,15 +19,6 @@ public interface CategoryService {
      */
     String getCategoryNameById(Integer id);
 
-
-    /**
-     * 根据类别名 获取 类别
-     *
-     * @param categoryName 类别名
-     * @return top.fuyuaaa.shadowpuppets.model.Category
-     */
-    Category getCategoryByName(String categoryName);
-
     /**
      * 获取类别列表
      *
@@ -34,13 +26,21 @@ public interface CategoryService {
      */
     List<Category> getCategoryList();
 
+
+    /**
+     * 获取类别列表
+     *
+     * @return 类别列表
+     */
+    List<CategoryVO> getCategoryVOList();
+
     /**
      * 添加类别
      *
      * @param category 类别
      * @return true/false
      */
-    Boolean addCategory(Category category);
+    void addCategory(Category category);
 
     /**
      * 更新类别
@@ -48,7 +48,7 @@ public interface CategoryService {
      * @param category 类别
      * @return true/false
      */
-    Boolean updateCategory(Category category);
+    void updateCategory(Category category);
 
     /**
      * 删除类别
@@ -56,6 +56,6 @@ public interface CategoryService {
      * @param id 类别ID
      * @return true/false
      */
-    Boolean removeCategory(Integer id);
+    void removeCategory(Integer id);
 
 }

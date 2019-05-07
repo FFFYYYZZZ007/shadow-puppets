@@ -5,6 +5,7 @@ import top.fuyuaaa.shadowpuppets.model.po.GoodsOrderInfoPO;
 import top.fuyuaaa.shadowpuppets.model.po.GoodsOrderPO;
 import top.fuyuaaa.shadowpuppets.model.qo.GoodsOrderQO;
 
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -19,16 +20,11 @@ public interface GoodsOrderDao {
             "VALUES ( #{id}, #{userId},#{expressFee},#{dealPrice}, 0, now(), now());")
     void insertNewGoodsOrder(GoodsOrderPO goodsOrderPO);
 
-    @Insert("INSERT INTO `goods_order`" +
-            "(`id`,`user_id`, `express_fee`, `deal_price`, `status`, `date_create`, `date_update`) " +
-            "VALUES ( #{id}, #{userId},#{expressFee},#{dealPrice}, 0, #{dateCreate}, now());")
-    void insertNewGoodsOrder2(GoodsOrderPO goodsOrderPO);
-
     @Select("select * from goods_order where id = #{orderId} limit 1")
     GoodsOrderPO getById(String orderId);
 
-    @Update("update goods_order set status=4 ,date_update = now() where id = #{orderId}")
-    Integer cancelGoodsOrder(String orderId);
+    @Update("update goods_order set status=#{status} ,date_update = now() where id = #{orderId}")
+    Integer cancelGoodsOrder(String orderId,Integer status);
 
 
     List<GoodsOrderPO> getOrderList(GoodsOrderQO goodsOrderQO);
@@ -47,4 +43,7 @@ public interface GoodsOrderDao {
     //==============================  订单管理  ==============================
 
     Integer count(GoodsOrderQO goodsOrderQO);
+
+    @Update("update goods_order set date_create = #{date} where id=#{orderId}")
+    Integer updateDateCreate(String orderId, Date date);
 }

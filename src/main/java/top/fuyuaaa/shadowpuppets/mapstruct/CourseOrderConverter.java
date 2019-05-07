@@ -11,8 +11,8 @@ import top.fuyuaaa.shadowpuppets.model.po.CourseOrderPO;
 import top.fuyuaaa.shadowpuppets.model.vo.CourseOrderVO;
 import top.fuyuaaa.shadowpuppets.model.vo.CourseVO;
 import top.fuyuaaa.shadowpuppets.service.CourseService;
-import top.fuyuaaa.shadowpuppets.util.DateUtils;
-import top.fuyuaaa.shadowpuppets.util.SpringUtil;
+import top.fuyuaaa.shadowpuppets.common.utils.DateUtils;
+import top.fuyuaaa.shadowpuppets.common.utils.SpringUtil;
 
 import java.util.List;
 

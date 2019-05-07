@@ -8,19 +8,18 @@ import top.fuyuaaa.shadowpuppets.common.enums.CourseOrderStatusEnum;
 import top.fuyuaaa.shadowpuppets.common.enums.ExEnum;
 import top.fuyuaaa.shadowpuppets.dao.CourseDao;
 import top.fuyuaaa.shadowpuppets.dao.CourseOrderDao;
-import top.fuyuaaa.shadowpuppets.exceptions.CourseException;
-import top.fuyuaaa.shadowpuppets.holder.LoginUserHolder;
+import top.fuyuaaa.shadowpuppets.common.exceptions.CourseException;
+import top.fuyuaaa.shadowpuppets.common.holders.LoginUserHolder;
 import top.fuyuaaa.shadowpuppets.mapstruct.CourseOrderConverter;
 import top.fuyuaaa.shadowpuppets.model.LoginUserInfo;
 import top.fuyuaaa.shadowpuppets.model.PageVO;
 import top.fuyuaaa.shadowpuppets.model.po.CourseOrderPO;
-import top.fuyuaaa.shadowpuppets.model.po.CoursePO;
 import top.fuyuaaa.shadowpuppets.model.qo.CourseOrderQO;
 import top.fuyuaaa.shadowpuppets.model.vo.CourseOrderVO;
 import top.fuyuaaa.shadowpuppets.service.CourseOrderService;
 import top.fuyuaaa.shadowpuppets.service.CourseService;
-import top.fuyuaaa.shadowpuppets.util.AlipayUtil;
-import top.fuyuaaa.shadowpuppets.util.UUIDUtils;
+import top.fuyuaaa.shadowpuppets.common.utils.AlipayUtil;
+import top.fuyuaaa.shadowpuppets.common.utils.UUIDUtils;
 
 import java.util.List;
 
@@ -37,6 +36,7 @@ public class CourseOrderServiceImpl implements CourseOrderService {
     CourseDao courseDao;
     @Autowired
     CourseService courseService;
+
     @Override
     public String add(CourseOrderPO courseOrderPO) {
         this.validateCourseOrder(courseOrderPO);
@@ -51,8 +51,7 @@ public class CourseOrderServiceImpl implements CourseOrderService {
     @Override
     public CourseOrderVO getOrderInfo(String orderId) {
         CourseOrderPO orderPO = courseOrderDao.getById(orderId);
-        CourseOrderVO courseOrderVO = CourseOrderConverter.INSTANCE.toCourseOrderVO(orderPO);
-        return courseOrderVO;
+        return CourseOrderConverter.INSTANCE.toCourseOrderVO(orderPO);
     }
 
     @Override
@@ -77,8 +76,7 @@ public class CourseOrderServiceImpl implements CourseOrderService {
     @Override
     public String getPayUrl(String orderId) {
         CourseOrderVO orderVO = this.getOrderInfo(orderId);
-        String aliPayUrl = AlipayUtil.getAliPayUrl(orderVO);
-        return aliPayUrl;
+        return AlipayUtil.getAliPayUrl(orderVO);
     }
 
     @Override
@@ -92,11 +90,13 @@ public class CourseOrderServiceImpl implements CourseOrderService {
         courseOrderPO.setId(orderId);
         courseOrderPO.setCourseOrderStatus(CourseOrderStatusEnum.PENDING_STUDY);
         courseOrderDao.updateStatus(courseOrderPO);
+        courseDao.paidNumberAdd(courseOrderPO.getCourseId());
         return true;
     }
 
     @Override
     public PageVO<CourseOrderVO> getCourseOrderPageVO(CourseOrderQO courseOrderQO) {
+        courseOrderQO.setUserId(LoginUserHolder.instance().get().getId());
         PageHelper.startPage(courseOrderQO.getPageNum(), courseOrderQO.getPageSize());
         List<CourseOrderPO> courseOrderPOList = courseOrderDao.findList(courseOrderQO);
         PageInfo<CourseOrderPO> pageInfo = new PageInfo<>(courseOrderPOList);
@@ -114,6 +114,11 @@ public class CourseOrderServiceImpl implements CourseOrderService {
         }
     }
 
+    /**
+     * 填充订单参数
+     *
+     * @param courseOrderPO 订单
+     */
     private void fillCourseOrder(CourseOrderPO courseOrderPO) {
         LoginUserInfo userInfo = LoginUserHolder.instance().get();
         courseOrderPO.setId(UUIDUtils.getOrderCode());

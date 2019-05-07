@@ -4,7 +4,7 @@ import org.mapstruct.*;
 import org.mapstruct.factory.Mappers;
 import top.fuyuaaa.shadowpuppets.model.po.ExpressDeliveryPO;
 import top.fuyuaaa.shadowpuppets.model.vo.ExpressDeliveryVO;
-import top.fuyuaaa.shadowpuppets.util.DateUtils;
+import top.fuyuaaa.shadowpuppets.common.utils.DateUtils;
 
 import java.util.List;
 
@@ -17,17 +17,19 @@ import java.util.List;
 public abstract class ExpressDeliveryConverter {
     public final static ExpressDeliveryConverter INSTANCE = Mappers.getMapper(ExpressDeliveryConverter.class);
 
-    @Mapping(target = "deliveryStatus",ignore = true)
-    @Mapping(target = "expressCarrier",ignore = true)
-    @Mapping(target = "dateExpressStart",ignore = true)
-    @Mapping(target = "dateExpressEnd",ignore = true)
-    @Mapping(target = "dateUpdate",ignore = true)
+    @Mapping(target = "deliveryStatus", ignore = true)
+    @Mapping(target = "expressCarrier", ignore = true)
+    @Mapping(target = "dateExpressStart", ignore = true)
+    @Mapping(target = "dateExpressEnd", ignore = true)
+    @Mapping(target = "dateUpdate", ignore = true)
     public abstract ExpressDeliveryVO toExpressDeliveryVO(ExpressDeliveryPO expressDeliveryPO);
 
     @AfterMapping
-    protected void afterToExpressDeliveryVO(ExpressDeliveryPO source, @MappingTarget ExpressDeliveryVO target){
-        target.setDeliveryStatus(source.getDeliveryStatus().desc());
-        if (source.getExpressCarrier()!=null){
+    protected void afterToExpressDeliveryVO(ExpressDeliveryPO source, @MappingTarget ExpressDeliveryVO target) {
+        if (source.getDeliveryStatus() != null) {
+            target.setDeliveryStatus(source.getDeliveryStatus().desc());
+        }
+        if (source.getExpressCarrier() != null) {
             target.setExpressCarrier(source.getExpressCarrier().desc());
         }
         target.setDateExpressStart(DateUtils.formatDate(source.getDateExpressStart()));
