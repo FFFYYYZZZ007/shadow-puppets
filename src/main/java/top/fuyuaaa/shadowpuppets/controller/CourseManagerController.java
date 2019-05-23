@@ -44,7 +44,7 @@ public class CourseManagerController {
     public Result<Boolean> add(@RequestBody CourseBO courseBO) {
         courseBO.setPaidNumber(0);
         courseService.addCourse(courseBO);
-        return Result.success(true).setMsg("修改课程成功");
+        return Result.success(true).setMsg("添加课程成功");
     }
 
     @PostMapping("/update")

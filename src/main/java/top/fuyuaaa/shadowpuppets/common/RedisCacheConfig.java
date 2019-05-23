@@ -55,11 +55,11 @@ public class RedisCacheConfig {
 
     private Map<String, RedisCacheConfiguration> getRedisCacheConfigurationMap() {
         Map<String, RedisCacheConfiguration> redisCacheConfigurationMap = new HashMap<>(16);
-        redisCacheConfigurationMap.put("userDateAnalysis", this.getRedisCacheConfigurationWithTtl(60 * 5));
-        redisCacheConfigurationMap.put("orderDateAnalysis", this.getRedisCacheConfigurationWithTtl(60 * 5));
-        redisCacheConfigurationMap.put("priceDateAnalysis", this.getRedisCacheConfigurationWithTtl(60 * 5));
-        redisCacheConfigurationMap.put("goodsCategoryAnalysis", this.getRedisCacheConfigurationWithTtl(60 * 5));
-        redisCacheConfigurationMap.put("getRecommendCourseList", this.getRedisCacheConfigurationWithTtl(60 * 5));
+        redisCacheConfigurationMap.put("userDateAnalysis", this.getRedisCacheConfigurationWithTtl(30));
+        redisCacheConfigurationMap.put("orderDateAnalysis", this.getRedisCacheConfigurationWithTtl(30));
+        redisCacheConfigurationMap.put("priceDateAnalysis", this.getRedisCacheConfigurationWithTtl(30));
+        redisCacheConfigurationMap.put("goodsCategoryAnalysis", this.getRedisCacheConfigurationWithTtl(30));
+        redisCacheConfigurationMap.put("getRecommendCourseList", this.getRedisCacheConfigurationWithTtl(30));
         return redisCacheConfigurationMap;
     }
 

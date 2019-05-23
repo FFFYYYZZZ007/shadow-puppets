@@ -35,7 +35,9 @@ public abstract class GoodsOrderConverter {
 
     @AfterMapping
     public void afterToGoodsOrderBO(GoodsOrderPO source, @MappingTarget GoodsOrderBO target) {
-        target.setStatus(OrderStatusEnum.find(source.getStatus()));
+        if (source.getStatus() != null) {
+            target.setStatus(OrderStatusEnum.find(source.getStatus()));
+        }
     }
 
     @IterableMapping(elementTargetType = GoodsOrderBO.class)
@@ -49,7 +51,9 @@ public abstract class GoodsOrderConverter {
 
     @AfterMapping
     public void afterToGoodsOrderPO(GoodsOrderBO source, @MappingTarget GoodsOrderPO target) {
-        target.setStatus(source.getStatus().code());
+        if (source.getStatus() != null) {
+            target.setStatus(source.getStatus().code());
+        }
     }
 
     //==============================  BO => VO  ==============================

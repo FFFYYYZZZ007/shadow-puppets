@@ -102,9 +102,16 @@ public class CourseController {
         return Result.success(true).setMsg("确认结课成功");
     }
 
-    @PostMapping("/order/list")
+    @PostMapping("/order/user/list")
     @NeedLogin
     public Result getUserOrderList(@RequestBody CourseOrderQO courseOrderQO){
+        PageVO<CourseOrderVO> courseOrderPageVO = courseOrderService.getUserCourseOrderPageVO(courseOrderQO);
+        return Result.success(courseOrderPageVO);
+    }
+
+    @PostMapping("/order/list")
+    @NeedLogin
+    public Result getOrderList(@RequestBody CourseOrderQO courseOrderQO){
         PageVO<CourseOrderVO> courseOrderPageVO = courseOrderService.getCourseOrderPageVO(courseOrderQO);
         return Result.success(courseOrderPageVO);
     }

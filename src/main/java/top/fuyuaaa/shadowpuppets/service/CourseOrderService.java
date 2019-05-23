@@ -27,5 +27,7 @@ public interface CourseOrderService {
 
     Boolean checkTradeStatus(String orderId);
 
+    PageVO<CourseOrderVO> getUserCourseOrderPageVO(CourseOrderQO courseOrderQO);
+
     PageVO<CourseOrderVO> getCourseOrderPageVO(CourseOrderQO courseOrderQO);
 }

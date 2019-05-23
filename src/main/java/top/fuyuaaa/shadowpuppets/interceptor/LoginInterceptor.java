@@ -49,14 +49,13 @@ public class LoginInterceptor extends HandlerInterceptorAdapter {
         return StringUtils.isEmpty(token) || null == redisTemplate.hasKey(token) || !redisTemplate.hasKey(token);
     }
 
-    private boolean setUser(String token) {
+    private void setUser(String token) {
         String tel = token.split(":")[1];
         UserBO userBO = userService.getByTel(tel);
         if (null == userBO || null == userBO.getId()) {
-            return false;
+            return;
         }
         LoginUserInfo loginUserInfo = UserConverter.INSTANCE.toLoginUserInfo(userBO);
         LoginUserHolder.instance().put(loginUserInfo);
-        return true;
     }
 }

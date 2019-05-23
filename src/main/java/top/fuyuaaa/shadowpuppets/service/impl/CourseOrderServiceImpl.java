@@ -95,8 +95,13 @@ public class CourseOrderServiceImpl implements CourseOrderService {
     }
 
     @Override
-    public PageVO<CourseOrderVO> getCourseOrderPageVO(CourseOrderQO courseOrderQO) {
+    public PageVO<CourseOrderVO> getUserCourseOrderPageVO(CourseOrderQO courseOrderQO) {
         courseOrderQO.setUserId(LoginUserHolder.instance().get().getId());
+        return this.getCourseOrderPageVO(courseOrderQO);
+    }
+
+    @Override
+    public PageVO<CourseOrderVO> getCourseOrderPageVO(CourseOrderQO courseOrderQO) {
         PageHelper.startPage(courseOrderQO.getPageNum(), courseOrderQO.getPageSize());
         List<CourseOrderPO> courseOrderPOList = courseOrderDao.findList(courseOrderQO);
         PageInfo<CourseOrderPO> pageInfo = new PageInfo<>(courseOrderPOList);

@@ -37,7 +37,7 @@ public class GoodsOrderController {
     @NeedLogin
     public Result<String> addGoodsOrder(@RequestBody GoodsOrderBO goodsOrderBO) {
         goodsOrderBO = goodsOrderService.addNewGoodsOrder(goodsOrderBO);
-        return Result.success(goodsOrderBO.getId());
+        return Result.success(goodsOrderBO.getId()).setMsg("创建订单成功");
     }
 
     @PostMapping("/pay/url")

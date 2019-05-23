@@ -7,7 +7,7 @@ import com.alipay.api.DefaultAlipayClient;
 import com.alipay.api.request.*;
 import com.alipay.api.response.*;
 import lombok.extern.slf4j.Slf4j;
-import top.fuyuaaa.shadowpuppets.common.exceptions.AlipayException;
+import top.fuyuaaa.shadowpuppets.common.exceptions.AliPayException;
 import top.fuyuaaa.shadowpuppets.model.bo.AlipayBO;
 import top.fuyuaaa.shadowpuppets.model.vo.CourseOrderVO;
 import top.fuyuaaa.shadowpuppets.model.vo.GoodsOrderVO;
@@ -41,7 +41,7 @@ public class AlipayUtil {
         AlipayBO alipayBO = new AlipayBO();
         alipayBO.setOut_trade_no(String.valueOf(goodsOrderVO.getId()));
         alipayBO.setProduct_code("FAST_INSTANT_TRADE_PAY");
-        alipayBO.setTotal_amount(goodsOrderVO.getDealPrice());
+        alipayBO.setTotal_amount(goodsOrderVO.getDealPrice()+goodsOrderVO.getExpressFee());
         String goodsName = goodsOrderVO.getGoodsVOList().get(0).getGoodsName();
         if (goodsOrderVO.getGoodsVOList().size() > 1) {
             goodsName += "...等";
@@ -55,7 +55,7 @@ public class AlipayUtil {
         try {
             response = alipayClient.pageExecute(request, "get");
         } catch (AlipayApiException e) {
-            throw new AlipayException("调用支付宝接口出错");
+            throw new AliPayException("调用支付宝接口出错");
         }
         String body = response.getBody();
         log.info("支付宝返回信息: body: {}", body);
@@ -104,7 +104,7 @@ public class AlipayUtil {
         try {
             response = alipayClient.pageExecute(request, "get");
         } catch (AlipayApiException e) {
-            throw new AlipayException("调用支付宝接口出错");
+            throw new AliPayException("调用支付宝接口出错");
         }
         String body = response.getBody();
         log.info("支付宝返回信息: body: {}", body);

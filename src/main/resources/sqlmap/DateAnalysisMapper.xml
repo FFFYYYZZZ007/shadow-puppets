@@ -21,13 +21,14 @@
             x,
             round(
             sum(
-            deal_price ) ) AS
+            deal_price + express_fee ) ) AS
             y
         FROM
             goods_order
         WHERE
             DATE_SUB( CURDATE( )
             , INTERVAL 30 DAY ) <![CDATA[ <= ]]> date ( date_create )
+            AND status > 0
         GROUP BY
             x
     </select>

@@ -22,7 +22,6 @@ public interface Constant {
          * 是否发送过 60s, 防止频繁发送
          */
         Integer IS_SEND_EXPIRE_TIME = 60;
-
         /**
          * token KEY 前缀
          */
